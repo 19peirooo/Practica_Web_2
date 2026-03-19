@@ -1,0 +1,31 @@
+{
+  "name": "practica_web_2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node --watch --env-file=.env src/app.js",
+    "start": "node --env-file=.env src/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/19peirooo/Practica_Web_2.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/19peirooo/Practica_Web_2/issues"
+  },
+  "homepage": "https://github.com/19peirooo/Practica_Web_2#readme",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.3.1",
+    "zod": "^4.3.6"
+  }
+}
