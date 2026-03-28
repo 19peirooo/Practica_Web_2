@@ -4,6 +4,7 @@ import { handleHttpError } from "../utils/handleError.js";
 import { generateAccessToken, generateRefreshToken, getRefreshTokenExpiry } from "../utils/handleJwt.js";
 import { encrypt } from "../utils/handlePassword.js";
 import { generateVerificationCode } from "../utils/handleVerificationCode.js";
+import { userValidateSchema } from "../validators/user.validator.js";
 
 export async function getUsers(req, res) {
 
@@ -50,6 +51,40 @@ export async function registerUser(req, res) {
             accessToken: access_token,
             refreshToken: refresh_token
         })
+
+    } catch (error) {
+        handleHttpError(res,"ERROR: No se pudo registrar usuario",500)
+    }
+
+}
+
+export async function validateEmail(req, res) {
+
+    try {
+        
+        const { verificationCode } = req.body;
+
+        const user = req.user
+
+        if (user.status === 'verified') {
+            handleHttpError(res, 'Usuario ya verificado', 400)
+        }
+
+        if (user.verificationCode !== verificationCode) {
+
+            const attempts = user.verificationAttempts - 1 < 0 ? 0 : user.verificationAttempts - 1;
+
+            if (attempts <= 0) {
+                handleHttpError(res, "ERROR: Se han agotado los intentos de validación", 429)
+            } else {
+                handleHttpError(res,"ERROR: No se pudo validar email",400)
+            }
+            await User.findByIdAndUpdate(user._id, {verificationAttempts: attempts},{runValidators: true})
+            return
+        }
+
+        await User.findByIdAndUpdate(user._id, {status: 'verified'}, {runValidators: true})
+        res.status(200).json()
 
     } catch (error) {
         console.log(error)

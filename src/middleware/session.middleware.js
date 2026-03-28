@@ -1,7 +1,7 @@
 // src/middleware/session.middleware.js
-import User from '../models/user.models.js';
-import { verifyToken } from '../utils/handleJwt.js';
-import { handleHttpError } from '../utils/AppError.js';
+import User from '../models/User.js';
+import { verifyAccessToken } from '../utils/handleJwt.js';
+import { handleHttpError } from '../utils/handleError.js';
 
 /**
  * Middleware de autenticación
@@ -19,7 +19,7 @@ const authMiddleware = async (req, res, next) => {
     const token = req.headers.authorization.split(' ').pop();
     
     // Verificar token
-    const dataToken = await verifyToken(token);
+    const dataToken = await verifyAccessToken(token);
     
     if (!dataToken || !dataToken._id) {
       handleHttpError(res, 'ERROR_ID_TOKEN', 401);

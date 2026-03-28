@@ -1,0 +1,25 @@
+@baseUrl = http://localhost:3000/api/user
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OWM3ZDAxZGQyY2I4NjgwODU5OWI0ZDIiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NzQ3MDI2MjEsImV4cCI6MTc3NDcwMzUyMX0.KW_yXTVouhiEJL6ruy-nwelrykeFBcV10ANFkonmbJE
+### 🔹 1. Registrar usuario
+POST {{baseUrl}}/register
+Content-Type: application/json
+
+{
+"email": "victorpeiro05@gmail.com",
+"password": "12345678",
+"name": "Victor",
+"lastName": "Peiro",
+"nif": "12345678A"
+}
+
+###
+
+### 🔹 2. Validar email (usar código de BD)
+
+PUT {{baseUrl}}/validation
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "verificationCode": "000000"
+}

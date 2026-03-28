@@ -9,3 +9,11 @@ export const userRegisterSchema = z.object(
         
     }
 )
+
+export const userValidateSchema = z.object(
+    {
+        body: z.object({
+            verificationCode: z.string().length(6)
+        })
+    }
+)
