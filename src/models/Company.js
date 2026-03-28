@@ -1,7 +1,7 @@
 import mongoose from "mongoose"
 import { softDeletePlugin } from "../plugins/softDelete.plugin"
 
-const companySchema = mongoose.Schema(
+const companySchema = new mongoose.Schema(
     {
         owner: {
             type: mongoose.Schema.Types.ObjectId,

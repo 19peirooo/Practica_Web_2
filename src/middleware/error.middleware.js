@@ -2,20 +2,13 @@
 import mongoose from 'mongoose';
 import { AppError } from '../utils/AppError.js';
 
-/**
- * Middleware para rutas no encontradas
- */
 export const notFound = (req, res, next) => {
   next(AppError.notFound(`Ruta ${req.method} ${req.originalUrl}`));
 };
 
-/**
- * Middleware global de errores
- */
 export const errorHandler = (err, req, res, next) => {
   console.error('❌ Error:', err.message);
   
-  // Error operacional (esperado)
   if (err.isOperational) {
     return res.status(err.statusCode).json({
       error: true,
@@ -25,7 +18,6 @@ export const errorHandler = (err, req, res, next) => {
     });
   }
   
-  // Error de validación de Mongoose
   if (err instanceof mongoose.Error.ValidationError) {
     const details = Object.values(err.errors).map(e => ({
       field: e.path,
@@ -39,7 +31,6 @@ export const errorHandler = (err, req, res, next) => {
     });
   }
   
-  // Error de Cast (ID inválido)
   if (err instanceof mongoose.Error.CastError) {
     return res.status(400).json({
       error: true,
@@ -47,8 +38,7 @@ export const errorHandler = (err, req, res, next) => {
       code: 'CAST_ERROR'
     });
   }
-  
-  // Error de duplicado (unique constraint)
+
   if (err.code === 11000) {
     const field = Object.keys(err.keyValue || {})[0];
     return res.status(409).json({
@@ -58,7 +48,6 @@ export const errorHandler = (err, req, res, next) => {
     });
   }
   
-  // Error de Zod
   if (err.name === 'ZodError') {
     const details = err.errors.map(e => ({
       field: e.path.join('.'),
@@ -71,8 +60,7 @@ export const errorHandler = (err, req, res, next) => {
       details
     });
   }
-  
-  // Error de Multer
+
   if (err.code === 'LIMIT_FILE_SIZE') {
     return res.status(400).json({
       error: true,
@@ -89,7 +77,6 @@ export const errorHandler = (err, req, res, next) => {
     });
   }
   
-  // Error no controlado
   const isProduction = process.env.NODE_ENV === 'production';
   res.status(500).json({
     error: true,

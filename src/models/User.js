@@ -1,12 +1,11 @@
 import mongoose from "mongoose"
 import { softDeletePlugin } from "../plugins/softDelete.plugin.js"
 
-const userSchema = mongoose.Schema(
+const userSchema = new mongoose.Schema(
     {
         email: {
             type: String,
             required: true,
-            index: true,
             lowercase: true,
             trim: true
         },
@@ -38,7 +37,6 @@ const userSchema = mongoose.Schema(
             type: String,
             enum: ['pending','verified'],
             default: 'pending',
-            index: true
         },
         verificationCode: {
             type: String,
@@ -53,7 +51,6 @@ const userSchema = mongoose.Schema(
         company: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Company",
-            index: true
         },
         address: {
             street: {

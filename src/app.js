@@ -3,7 +3,8 @@ import express from 'express';
 import cors from 'cors';
 import dbConnect from './config/db.js';
 import routes from './routes/index.js';
-import { errorHandler, notFoundHandler } from './middleware/error.middleware.js';
+import helmet from 'helmet'
+import { errorHandler, notFound } from './middleware/error.middleware.js';
 
 const app = express();
 
@@ -21,7 +22,7 @@ app.use('/uploads', express.static('storage'));
 app.use('/api', routes);
 
 // Manejo de errores
-app.use(notFoundHandler);
+app.use(notFound);
 app.use(errorHandler);
 
 // Iniciar servidor
