@@ -17,3 +17,13 @@ export const userValidateSchema = z.object(
         })
     }
 )
+
+export const userLoginSchema = z.object(
+    {
+        body: z.object({
+            email: z.email("Email Invalido"),
+            password: z.string().min(8)
+        })
+        
+    }
+)

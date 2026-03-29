@@ -1,0 +1,42 @@
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OWM3ZDAxZGQyY2I4NjgwODU5OWI0ZDIiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NzQ3MDI2MjEsImV4cCI6MTc3NDcwMzUyMX0.KW_yXTVouhiEJL6ruy-nwelrykeFBcV10ANFkonmbJE
+
+### 1. Obtener todos los usuarios
+GET http://localhost:3000/api/user
+Accept: application/json
+
+###
+
+### 2. Registrar un usuario válido
+POST http://localhost:3000/api/user/register
+Content-Type: application/json
+
+{
+  "email": "TEST@MAIL.COM",
+  "password": "12345678",
+  "name": "Test",
+  "lastName": "Usuario",
+  "nif": "12345678A"
+}
+
+###
+
+### 3. Validar email 
+
+PUT http://localhost:3000/api/user/validation
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "verificationCode": "000000"
+}
+
+###
+
+### 4. Login
+POST http://localhost:3000/api/user/login
+Content-Type: application/json
+
+{
+  "email": "test@mail.com",
+  "password": "12345688"
+}
