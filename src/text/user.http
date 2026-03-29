@@ -1,4 +1,4 @@
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OWM5NTllN2Y3YjM2ZGRhNWM0ZWU2YTgiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NzQ4MDY0NTksImV4cCI6MTc3NDgwNzM1OX0.lZm6BCHulqb7Lrvgazx54OgdVTheO5z7X0qbo8JyZ50
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OWM5NTllN2Y3YjM2ZGRhNWM0ZWU2YTgiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NzQ4MTE1NjUsImV4cCI6MTc3NDgxMjQ2NX0.a31u0nGe2aULI6nVq2yy84JGCT7JpV1rDjJ27-ZeYGo
 
 ### 1. Registrar un usuario válido
 POST http://localhost:3000/api/user/register
@@ -65,6 +65,13 @@ Authorization: Bearer {{token}}
   },
   "isFreelance": true
 }
+
+###
+
+### 6. Subir logo
+curl -X PATCH http://localhost:3000/api/user/logo \
+  -H "Authorization: Bearer {{token}}" \
+  -F "logo=@./logo.png"
 
 ###
 

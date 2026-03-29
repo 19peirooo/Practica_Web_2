@@ -223,6 +223,35 @@ export async function loadCompanyData(req, res) {
 
 }
 
+export async function uploadLogo(req, res) {
+    try {
+
+        const user = req.user
+
+        if (!user.company) {
+            return handleHttpError(res, 'Usuario noo tiene compañia', 400)
+        }
+
+        if (!req.file) {
+            return handleHttpError(res, 'No se ha subido ningun archivo', 400)
+        }
+
+        const uploadPath = `${process.env.PUBLIC_URI}/uploads/${req.file.filename}`
+
+        await Company.findByIdAndUpdate(
+            user.company,
+            {logo: uploadPath},
+            {runValidators: true}
+        )
+
+        res.status(201).json()
+
+    } catch (error) {
+        console.error(error)
+        handleHttpError(res,"ERROR: No se hacer login",500)
+    }
+}
+
 export async function getUser(req, res) {
 
     try {
