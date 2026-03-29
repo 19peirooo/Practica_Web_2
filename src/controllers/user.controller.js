@@ -308,3 +308,22 @@ export async function logout(req, res) {
     }
 
 }
+
+export async function deleteUser(req, res) {
+    try {
+
+        const softDelete = req.query.soft
+
+        if (softDelete) {
+            await User.softDeleteById(req.user._id, req.user._id)
+        } else {
+            await User.findByIdAndDelete({id: req.user._id})
+        }
+
+        res.status(200).json()
+
+    } catch (error) {
+        console.error(error)
+        handleHttpError(res,"ERROR: No se hacer login",500)
+    }
+}

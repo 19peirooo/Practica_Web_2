@@ -1,8 +1,8 @@
 
 import { Router } from "express"
-import { validate } from "../middleware/validate.js";
+import { validate } from "../middleware/validate.middleware.js";
 import { userLoginSchema, userOnboardingSchema, userRegisterSchema, userValidateSchema } from "../validators/user.validator.js";
-import { getUser, loadCompanyData, loadUserData, loginUser, logout, refreshAccessToken, registerUser, uploadLogo, validateEmail } from "../controllers/user.controller.js";
+import { deleteUser, getUser, loadCompanyData, loadUserData, loginUser, logout, refreshAccessToken, registerUser, uploadLogo, validateEmail } from "../controllers/user.controller.js";
 import authMiddleware from "../middleware/session.middleware.js";
 import { companyOnboardingSchema } from "../validators/company.validator.js";
 import uploadMiddleware from "../utils/handleStorage.js";
@@ -24,5 +24,7 @@ router.get('/', authMiddleware ,getUser)
 
 router.post('/refresh', refreshAccessToken)
 router.post('/logout', authMiddleware, logout)
+
+router.delete('/',authMiddleware, deleteUser)
 
 export default router;
