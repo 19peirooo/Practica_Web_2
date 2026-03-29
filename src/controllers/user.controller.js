@@ -5,14 +5,6 @@ import { handleHttpError } from "../utils/handleError.js";
 import { generateAccessToken, generateRefreshToken, getRefreshTokenExpiry } from "../utils/handleJwt.js";
 import { compare, encrypt } from "../utils/handlePassword.js";
 import { generateVerificationCode } from "../utils/handleVerificationCode.js";
-import { userValidateSchema } from "../validators/user.validator.js";
-
-export async function getUsers(req, res) {
-
-    const users = await User.find().lean()
-    res.status(200).json(users)
-
-}
 
 export async function registerUser(req, res) {
     
@@ -225,6 +217,20 @@ export async function loadCompanyData(req, res) {
         res.status(200).json()
 
     } catch (error) {
+        console.error(error)
+        handleHttpError(res,"ERROR: No se hacer login",500)
+    }
+
+}
+
+export async function getUser(req, res) {
+
+    try {
+
+        const user = await User.findById(req.user._id).populate('company')
+        return res.status(200).json(user)
+
+    }  catch (error) {
         console.error(error)
         handleHttpError(res,"ERROR: No se hacer login",500)
     }

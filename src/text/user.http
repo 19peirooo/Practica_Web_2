@@ -1,12 +1,6 @@
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OWM5NWY3MjAxMjg2NGU3YWMzZmRjZDAiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NzQ4MDQ4NTAsImV4cCI6MTc3NDgwNTc1MH0.1pnoo6H8FXZ3HiLT9HBhQMpPhHkiv5TkFx3dYEPYnZE
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OWM5NTllN2Y3YjM2ZGRhNWM0ZWU2YTgiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NzQ4MDY0NTksImV4cCI6MTc3NDgwNzM1OX0.lZm6BCHulqb7Lrvgazx54OgdVTheO5z7X0qbo8JyZ50
 
-### 1. Obtener todos los usuarios
-GET http://localhost:3000/api/user
-Accept: application/json
-
-###
-
-### 2. Registrar un usuario válido
+### 1. Registrar un usuario válido
 POST http://localhost:3000/api/user/register
 Content-Type: application/json
 
@@ -17,7 +11,7 @@ Content-Type: application/json
 
 ###
 
-### 3. Validar email 
+### 2. Validar email 
 
 PUT http://localhost:3000/api/user/validation
 Content-Type: application/json
@@ -29,7 +23,7 @@ Authorization: Bearer {{token}}
 
 ###
 
-### 4. Login
+### 3. Login
 POST http://localhost:3000/api/user/login
 Content-Type: application/json
 
@@ -40,7 +34,7 @@ Content-Type: application/json
 
 ###
 
-### 5. Onboarding Usuario
+### 4. Onboarding Usuario
 
 PUT http://localhost:3000/api/user/register
 Content-Type: application/json
@@ -54,7 +48,7 @@ Authorization: Bearer {{token}}
 
 ###
 
-### 6. Onboarding Compañia
+### 5. Onboarding Compañia
 PATCH http://localhost:3000/api/user/company
 Content-Type: application/json
 Authorization: Bearer {{token}}
@@ -71,3 +65,10 @@ Authorization: Bearer {{token}}
   },
   "isFreelance": true
 }
+
+###
+
+### 7. Obtener todos los usuarios
+GET http://localhost:3000/api/user
+Authorization: Bearer {{token}}
+
