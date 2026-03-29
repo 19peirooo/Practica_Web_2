@@ -1,4 +1,6 @@
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OWM5NTllN2Y3YjM2ZGRhNWM0ZWU2YTgiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NzQ4MTE1NjUsImV4cCI6MTc3NDgxMjQ2NX0.a31u0nGe2aULI6nVq2yy84JGCT7JpV1rDjJ27-ZeYGo
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OWM5NTllN2Y3YjM2ZGRhNWM0ZWU2YTgiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NzQ4MTQ3MzYsImV4cCI6MTc3NDgxNTYzNn0.u5ENcKoZwrkErbqI1e6QTJQFKwtpH4dWT2dnzQ9T9ic
+
+@refreshToken = 7992ea3fba6db5558a8630b87783ad87c0f9a4a0f71b4477b06e846c1c63debd59788a0b2acd2a2397943e5915e036a99f77a230c741feda4fc44d929f7e16a2
 
 ### 1. Registrar un usuario válido
 POST http://localhost:3000/api/user/register
@@ -79,3 +81,18 @@ curl -X PATCH http://localhost:3000/api/user/logo \
 GET http://localhost:3000/api/user
 Authorization: Bearer {{token}}
 
+### 
+
+### 8. Refresh Token
+POST http://localhost:3000/api/user/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+###
+
+### 9. Logout
+POST http://localhost:3000/api/user/logout
+Authorization: Bearer {{token}}

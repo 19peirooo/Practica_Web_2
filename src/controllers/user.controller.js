@@ -265,3 +265,46 @@ export async function getUser(req, res) {
     }
 
 }
+
+export async function refreshAccessToken(req, res) {
+    
+    try {
+        const { refreshToken } = req.body
+
+        if (!refreshToken) {
+            return handleHttpError(res, "Falta refreshToken", 400)
+        }
+
+        const storedToken = await RefreshToken.findOne({token: refreshToken}).populate('user')
+
+        if (!storedToken || !storedToken.isActive()) {
+            return handleHttpError(res,"Refresh Token Expirado o Invalido", 401)
+        }
+
+        const accessToken = generateAccessToken(storedToken.user)
+
+        res.status(200).json({accessToken})
+    } catch (error) {
+        console.error(error)
+        handleHttpError(res,"ERROR: No se hacer login",500)
+    }
+
+}
+
+export async function logout(req, res) {
+
+    try {
+
+        await RefreshToken.updateMany(
+            {user: req.user._id, revokedAt: null},
+            {revokedAt: new Date(), revokedByIp: req.ip}
+        )
+
+        res.status(200).json()
+
+    } catch (error) {
+        console.error(error)
+        handleHttpError(res,"ERROR: No se hacer login",500)
+    }
+
+}
