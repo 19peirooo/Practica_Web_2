@@ -6,14 +6,14 @@ export const userRegisterSchema = z.object(
             email: z.email("Email Invalido").transform((e) => e.toLowerCase().trim()),
             password: z.string().min(8)
         })
-        
+
     }
 )
 
 export const userValidateSchema = z.object(
     {
         body: z.object({
-            verificationCode: z.string().length(6)
+            verificationCode: z.string().trim().length(6)
         })
     }
 )
@@ -21,9 +21,22 @@ export const userValidateSchema = z.object(
 export const userLoginSchema = z.object(
     {
         body: z.object({
-            email: z.email("Email Invalido"),
-            password: z.string().min(8)
+            email: z.email("Email Invalido").trim(),
+            password: z.string().trim().min(8)
         })
         
+    }
+)
+
+export const userOnboardingSchema = z.object(
+    {
+        body: z.object({
+            name: z.string().trim(),
+            lastName:z.string().trim(),
+            nif: z.string().refine((nif_val) => {
+                return /^[0-9]{8}[A-Z]$/.test(nif_val) || 
+                /^[XYZ][0-9]{7}[A-Z]$/.test(nif_val)
+            })
+        })
     }
 )

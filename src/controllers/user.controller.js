@@ -1,3 +1,4 @@
+import Company from "../models/Company.js";
 import RefreshToken from "../models/refreshToken.js";
 import User from "../models/User.js"
 import { handleHttpError } from "../utils/handleError.js";
@@ -53,6 +54,7 @@ export async function registerUser(req, res) {
         })
 
     } catch (error) {
+        console.error(error)
         handleHttpError(res,"ERROR: No se pudo registrar usuario",500)
     }
 
@@ -67,7 +69,7 @@ export async function validateEmail(req, res) {
         const user = req.user
 
         if (user.status === 'verified') {
-            handleHttpError(res, 'Usuario ya verificado', 400)
+            return handleHttpError(res, 'Usuario ya verificado', 400)
         }
 
         if (user.verificationCode !== verificationCode) {
@@ -87,7 +89,7 @@ export async function validateEmail(req, res) {
         res.status(200).json()
 
     } catch (error) {
-        console.log(error)
+        console.error(error)
         handleHttpError(res,"ERROR: No se pudo registrar usuario",500)
     }
 
@@ -137,7 +139,93 @@ export async function loginUser(req,res) {
         })
 
     } catch (error) {
-        console.log(error)
+        console.error(error)
+        handleHttpError(res,"ERROR: No se hacer login",500)
+    }
+
+}
+
+export async function loadUserData(req, res) {
+     
+    try {
+
+        const { name, lastName, nif } = req.body
+
+        await User.findByIdAndUpdate(
+            req.user._id,
+            {
+                name: name,
+                lastName: lastName,
+                nif: nif
+            },
+            {runValidators: true}
+        )
+
+        res.status(200).json()
+
+    } catch (error) {
+        console.error(error)
+        handleHttpError(res,"ERROR: No se hacer login",500)
+    }
+
+}
+
+export async function loadCompanyData(req, res) {
+
+    try {
+
+        const user = req.user
+
+        if (user.company) {
+            return handleHttpError(res, "No se pudo crear compañia", 400)
+        }
+
+        const {name, cif, address, isFreelance} = req.body
+
+        const companyStored = await Company.findOne({cif: cif})
+
+        if (!companyStored) {
+
+            let company = null
+
+            if (isFreelance) {
+                company = await Company.create(
+                    {
+                        owner: user._id,
+                        name: user.name,
+                        cif: user.nif,
+                        address: user?.address || address 
+                    }
+                )
+            } else {
+                company = await Company.create(
+                    {
+                        owner: user._id,
+                        name: name,
+                        cif: cif,
+                        address: address
+                    }
+                )
+            }
+
+            await User.findByIdAndUpdate(
+                user._id,
+                {company: company._id, role: 'admin'},
+                {runValidators: true}
+            )
+
+        } else {
+            await User.findByIdAndUpdate(
+                user._id,
+                { company: companyStored._id, role: 'guest' },
+                { runValidators: true }
+            )
+        }
+
+        res.status(200).json()
+
+    } catch (error) {
+        console.error(error)
         handleHttpError(res,"ERROR: No se hacer login",500)
     }
 

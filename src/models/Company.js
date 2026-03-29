@@ -1,5 +1,5 @@
 import mongoose from "mongoose"
-import { softDeletePlugin } from "../plugins/softDelete.plugin"
+import { softDeletePlugin } from "../plugins/softDelete.plugin.js"
 
 const companySchema = new mongoose.Schema(
     {
@@ -57,7 +57,7 @@ const companySchema = new mongoose.Schema(
 companySchema.plugin(softDeletePlugin)
 
 companySchema.index({owner : 1})
-companySchema.index({cif : 1})
+companySchema.index({cif : 1}, {unique: true})
 companySchema.index({name: 1})
 
 const Company = mongoose.model('Company', companySchema)

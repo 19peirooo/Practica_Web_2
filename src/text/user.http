@@ -1,4 +1,4 @@
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OWM3ZDAxZGQyY2I4NjgwODU5OWI0ZDIiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NzQ3MDI2MjEsImV4cCI6MTc3NDcwMzUyMX0.KW_yXTVouhiEJL6ruy-nwelrykeFBcV10ANFkonmbJE
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OWM5NWY3MjAxMjg2NGU3YWMzZmRjZDAiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NzQ4MDQ4NTAsImV4cCI6MTc3NDgwNTc1MH0.1pnoo6H8FXZ3HiLT9HBhQMpPhHkiv5TkFx3dYEPYnZE
 
 ### 1. Obtener todos los usuarios
 GET http://localhost:3000/api/user
@@ -11,11 +11,8 @@ POST http://localhost:3000/api/user/register
 Content-Type: application/json
 
 {
-  "email": "TEST@MAIL.COM",
-  "password": "12345678",
-  "name": "Test",
-  "lastName": "Usuario",
-  "nif": "12345678A"
+  "email": "freelance@mail.com",
+  "password": "12345678"
 }
 
 ###
@@ -38,5 +35,39 @@ Content-Type: application/json
 
 {
   "email": "test@mail.com",
-  "password": "12345688"
+  "password": "12345678"
+}
+
+###
+
+### 5. Onboarding Usuario
+
+PUT http://localhost:3000/api/user/register
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Test",
+  "lastName": "Usuario",
+  "nif": "12345678A"
+}
+
+###
+
+### 6. Onboarding Compañia
+PATCH http://localhost:3000/api/user/company
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "compañia1",
+  "cif": "A-12344978",
+  "address": {
+    "street":"x",
+    "number": 1,
+    "postal": "00000",
+    "city": "x",
+    "province": "x"
+  },
+  "isFreelance": true
 }
