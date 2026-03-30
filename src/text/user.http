@@ -1,5 +1,5 @@
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OWNhNTQ0NDY3ZTk5OWI3YWM4NGZkZjAiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NzQ4Njc2MjQsImV4cCI6MTc3NDg2ODUyNH0.rt5VXHGMHYJLgzVgMyUPj48oMvZWBAQPPIuTUFhJjPI
-@refreshToken = f2f7e689d7c45c43d2dad7a664113dcb26f62f6c348896946e97c8671e3aeb5ee2468cb008314fce874c38f7715069b0423577b3924a247d25b4e917d0771ded
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OWNhYTJlMWZjZWI2N2VkMGRmYTI2NTYiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NzQ4ODc4MDIsImV4cCI6MTc3NDg4ODcwMn0.Rnp9z8F3MUK5_mbzQN4WZ75ZVkemYJp_jMaLIwbIe-g
+@refreshToken = 9b8765965e23bdd0972f8d05aef240c1cbb4c8df68261f81b67dcf19fa9bb3d1dd4ed444bf5d8c160fcdfcaebf6f9f784c02db18de4a15582d964686f4455783
 
 
 ### 1. Registrar un usuario válido
@@ -19,7 +19,7 @@ Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-    "verificationCode": "547885"
+    "verificationCode": "589269"
 }
 
 ###
@@ -69,10 +69,16 @@ Authorization: Bearer {{token}}
 ###
 
 ### 6. Subir logo
-curl -X PATCH http://localhost:3000/api/user/logo \
-  -H "Authorization: Bearer {{token}}" \
-  -F "logo=@./logo.png"
+PATCH http://localhost:3000/api/user/logo
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="logo"; filename="logo.png"
+Content-Type: image/png
+
+< ./logo.png
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
 ###
 
 ### 7. Obtener Usuario
