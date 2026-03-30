@@ -38,6 +38,8 @@ export async function registerUser(req, res) {
             createdByIp: req.ip
         })
         
+        ee.emit('user:registered', user.email)
+
         res.status(201).json({
             email: user.email,
             status: user.status,
@@ -79,11 +81,13 @@ export async function validateEmail(req, res) {
         }
 
         await User.findByIdAndUpdate(user._id, {status: 'verified'}, {runValidators: true})
+        ee.emit('user:verified', user.email)
+
         res.status(200).json({message: "Email Validado"})
 
     } catch (error) {
         console.error(error)
-        handleHttpError(res,"ERROR: No se pudo registrar usuario",500)
+        handleHttpError(res,"ERROR: No se pudo validar mail",500)
     }
 
 }
@@ -133,7 +137,7 @@ export async function loginUser(req,res) {
 
     } catch (error) {
         console.error(error)
-        handleHttpError(res,"ERROR: No se hacer login",500)
+        handleHttpError(res,"ERROR: No se pudo hacer login",500)
     }
 
 }
@@ -158,7 +162,7 @@ export async function loadUserData(req, res) {
 
     } catch (error) {
         console.error(error)
-        handleHttpError(res,"ERROR: No se hacer login",500)
+        handleHttpError(res,"ERROR: No se pudo hacer onboarding de usuario",500)
     }
 
 }
@@ -219,7 +223,7 @@ export async function loadCompanyData(req, res) {
 
     } catch (error) {
         console.error(error)
-        handleHttpError(res,"ERROR: No se hacer login",500)
+        handleHttpError(res,"ERROR: No se pudo hacer onboarding de compañia",500)
     }
 
 }
@@ -249,7 +253,7 @@ export async function uploadLogo(req, res) {
 
     } catch (error) {
         console.error(error)
-        handleHttpError(res,"ERROR: No se hacer login",500)
+        handleHttpError(res,"ERROR: No se pudo actualizar el logo",500)
     }
 }
 
@@ -262,7 +266,7 @@ export async function getUser(req, res) {
 
     }  catch (error) {
         console.error(error)
-        handleHttpError(res,"ERROR: No se hacer login",500)
+        handleHttpError(res,"ERROR: No se pudo acceder a usuario",500)
     }
 
 }
@@ -287,7 +291,7 @@ export async function refreshAccessToken(req, res) {
         res.status(200).json({accessToken})
     } catch (error) {
         console.error(error)
-        handleHttpError(res,"ERROR: No se hacer login",500)
+        handleHttpError(res,"ERROR: No se pudo refrescar token",500)
     }
 
 }
@@ -305,7 +309,7 @@ export async function logout(req, res) {
 
     } catch (error) {
         console.error(error)
-        handleHttpError(res,"ERROR: No se hacer login",500)
+        handleHttpError(res,"ERROR: No se pudo hacer logout",500)
     }
 
 }
@@ -321,11 +325,13 @@ export async function deleteUser(req, res) {
             await User.findByIdAndDelete(req.user._id)
         }
 
+        ee.emit('user:deleted', req.user.email)
+
         res.status(200).json({message: "Usuario Borrado con Exito"})
 
     } catch (error) {
         console.error(error)
-        handleHttpError(res,"ERROR: No se hacer login",500)
+        handleHttpError(res,"ERROR: No se pudo eliminar usuario",500)
     }
 }
 
@@ -354,7 +360,7 @@ export async function changePwd(req, res) {
 
     } catch (error) {
         console.error(error)
-        handleHttpError(res,"ERROR: No se hacer login",500)
+        handleHttpError(res,"ERROR: No se pudo cambiar contraseña",500)
     }
 
 }
