@@ -1,4 +1,4 @@
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OWM5NTllN2Y3YjM2ZGRhNWM0ZWU2YTgiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NzQ4MTcwNzcsImV4cCI6MTc3NDgxNzk3N30.3YX-eq_F9cW8gkBKvIcwNEYHfEcxWyzP1hxSe-5Q3DA
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OWNhNTQ0NDY3ZTk5OWI3YWM4NGZkZjAiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NzQ4Njc2MjQsImV4cCI6MTc3NDg2ODUyNH0.rt5VXHGMHYJLgzVgMyUPj48oMvZWBAQPPIuTUFhJjPI
 @refreshToken = f2f7e689d7c45c43d2dad7a664113dcb26f62f6c348896946e97c8671e3aeb5ee2468cb008314fce874c38f7715069b0423577b3924a247d25b4e917d0771ded
 
 
@@ -7,20 +7,19 @@ POST http://localhost:3000/api/user/register
 Content-Type: application/json
 
 {
-  "email": "freelance@mail.com",
+  "email": "test@mail.com",
   "password": "12345678"
 }
 
 ###
 
 ### 2. Validar email 
-
 PUT http://localhost:3000/api/user/validation
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-    "verificationCode": "000000"
+    "verificationCode": "547885"
 }
 
 ###
@@ -37,7 +36,6 @@ Content-Type: application/json
 ###
 
 ### 4. Onboarding Usuario
-
 PUT http://localhost:3000/api/user/register
 Content-Type: application/json
 Authorization: Bearer {{token}}
@@ -65,7 +63,7 @@ Authorization: Bearer {{token}}
     "city": "x",
     "province": "x"
   },
-  "isFreelance": true
+  "isFreelance": false
 }
 
 ###
@@ -108,3 +106,15 @@ Authorization: Bearer {{token}}
 ### 11. Soft Delete
 DELETE http://localhost:3000/api/user?soft=true
 Authorization: Bearer {{token}}
+
+###
+
+### 12. Cambia Contrasela
+PUT http://localhost:3000/api/user/password
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "oldPassword": "JAJAJAJJAJAJAJAJ",
+  "newPassword": "12345678"
+}

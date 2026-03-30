@@ -21,7 +21,7 @@ export const userValidateSchema = z.object(
 export const userLoginSchema = z.object(
     {
         body: z.object({
-            email: z.email("Email Invalido").trim(),
+            email: z.email("Email Invalido").transform((e) => e.toLowerCase().trim()),
             password: z.string().trim().min(8)
         })
         
@@ -38,5 +38,16 @@ export const userOnboardingSchema = z.object(
                 /^[XYZ][0-9]{7}[A-Z]$/.test(nif_val)
             })
         })
+    }
+)
+
+export const userChangePwdSchema = z.object(
+    {
+        body: z.object({
+            oldPassword: z.string().trim().min(8),
+            newPassword: z.string().trim().min(8)
+        }).refine((data) => {
+            return data.oldPassword !== data.newPassword
+        }, {message: "La contraseñas no pueden ser iguales"})
     }
 )

@@ -78,7 +78,7 @@ export async function validateEmail(req, res) {
         }
 
         await User.findByIdAndUpdate(user._id, {status: 'verified'}, {runValidators: true})
-        res.status(200).json()
+        res.status(200).json({message: "Email Validado"})
 
     } catch (error) {
         console.error(error)
@@ -153,7 +153,7 @@ export async function loadUserData(req, res) {
             {runValidators: true}
         )
 
-        res.status(200).json()
+        res.status(200).json({message: "Onboarding de Usuario completado"})
 
     } catch (error) {
         console.error(error)
@@ -214,7 +214,7 @@ export async function loadCompanyData(req, res) {
             )
         }
 
-        res.status(200).json()
+        res.status(200).json({message: "Onboarding de la compañia completado"})
 
     } catch (error) {
         console.error(error)
@@ -244,7 +244,7 @@ export async function uploadLogo(req, res) {
             {runValidators: true}
         )
 
-        res.status(201).json()
+        res.status(201).json({message: "Logo Actualizado"})
 
     } catch (error) {
         console.error(error)
@@ -300,7 +300,7 @@ export async function logout(req, res) {
             {revokedAt: new Date(), revokedByIp: req.ip}
         )
 
-        res.status(200).json()
+        res.status(200).json({message: "Logout Completado"})
 
     } catch (error) {
         console.error(error)
@@ -312,18 +312,48 @@ export async function logout(req, res) {
 export async function deleteUser(req, res) {
     try {
 
-        const softDelete = req.query.soft
+        const softDelete = req.query.soft === 'true'
 
         if (softDelete) {
             await User.softDeleteById(req.user._id, req.user._id)
         } else {
-            await User.findByIdAndDelete({id: req.user._id})
+            await User.findByIdAndDelete(req.user._id)
         }
 
-        res.status(200).json()
+        res.status(200).json({message: "Usuario Borrado con Exito"})
 
     } catch (error) {
         console.error(error)
         handleHttpError(res,"ERROR: No se hacer login",500)
     }
+}
+
+export async function changePwd(req, res) {
+
+    try {
+
+        const user = req.user
+        const { oldPassword, newPassword } = req.body
+
+        const match = await compare(oldPassword, user.password)
+
+        if (!match) {
+            return handleHttpError(res, 'La contraseña actual no es correcta', 400)
+        }
+
+        const hashedPwd = await encrypt(newPassword)
+
+        await User.findByIdAndUpdate(
+            user._id,
+            {password: hashedPwd},
+            {runValidators: true}
+        )
+
+        res.status(200).json({message: "Contraseña Cambiada Con Exito"})
+
+    } catch (error) {
+        console.error(error)
+        handleHttpError(res,"ERROR: No se hacer login",500)
+    }
+
 }
