@@ -1,13 +1,12 @@
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OWNhYTJlMWZjZWI2N2VkMGRmYTI2NTYiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NzQ4ODc4MDIsImV4cCI6MTc3NDg4ODcwMn0.Rnp9z8F3MUK5_mbzQN4WZ75ZVkemYJp_jMaLIwbIe-g
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OWNhZjA2MTUyMGY3OTNhMDQ2NzQzMjgiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NzQ5MDc0ODksImV4cCI6MTc3NDkwODM4OX0.MZW5Q5sTri4_W7xdWw4_mCXBe2CSgVR14Tu0-xVYuuQ
 @refreshToken = 9b8765965e23bdd0972f8d05aef240c1cbb4c8df68261f81b67dcf19fa9bb3d1dd4ed444bf5d8c160fcdfcaebf6f9f784c02db18de4a15582d964686f4455783
-
 
 ### 1. Registrar un usuario válido
 POST http://localhost:3000/api/user/register
 Content-Type: application/json
 
 {
-  "email": "test@mail.com",
+  "email": "admin@mail.com",
   "password": "12345678"
 }
 
@@ -19,7 +18,7 @@ Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-    "verificationCode": "589269"
+  "verificationCode": "427870"
 }
 
 ###
@@ -123,4 +122,16 @@ Content-Type: application/json
 {
   "oldPassword": "JAJAJAJJAJAJAJAJ",
   "newPassword": "12345678"
+}
+
+###
+
+### 13. Invitar Usuario
+PUT  http://localhost:3000/api/user/invite
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "email": "guest@mail.com",
+  "password": "12345678"
 }

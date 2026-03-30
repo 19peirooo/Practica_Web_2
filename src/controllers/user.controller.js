@@ -1,6 +1,7 @@
 import Company from "../models/Company.js";
 import RefreshToken from "../models/refreshToken.js";
 import User from "../models/User.js"
+import ee from "../services/notification.service.js";
 import { handleHttpError } from "../utils/handleError.js";
 import { generateAccessToken, generateRefreshToken, getRefreshTokenExpiry } from "../utils/handleJwt.js";
 import { compare, encrypt } from "../utils/handlePassword.js";
@@ -354,6 +355,43 @@ export async function changePwd(req, res) {
     } catch (error) {
         console.error(error)
         handleHttpError(res,"ERROR: No se hacer login",500)
+    }
+
+}
+
+export async function inviteUser(req, res) {
+
+    try {
+
+        const user = req.user
+        const { email, password } = req.body
+
+        if (!user.company) {
+            return handleHttpError(res,'El usuario no tiene una compañia asignada', 400) 
+        }
+
+        const existingGuest = await User.findOne({email: email})
+
+        if (existingGuest) {
+            return handleHttpError(res, 'Invitado ya Registrado', 409)
+        }
+
+        const hashedPwd = await encrypt(password)
+
+        const guest = await User.create({
+            email: email,
+            password: hashedPwd,
+            company: user.company,
+            role: 'guest'
+        })
+
+        ee.emit('user:invited', email)
+
+        res.status(201).json({message: "Usuario Invitado"})
+
+    } catch (error) {
+        console.error(error)
+        handleHttpError(res,"ERROR: No se pudo invitar usuario",500)
     }
 
 }

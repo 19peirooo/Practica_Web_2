@@ -1,5 +1,5 @@
 // src/middleware/rol.middleware.js
-import { handleHttpError } from '../utils/AppError.js';
+import { handleHttpError } from '../utils/handleError.js';
 
 /**
  * Middleware de autorización por rol
