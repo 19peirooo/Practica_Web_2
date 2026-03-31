@@ -1,5 +1,13 @@
 import { z } from "zod"
 
+const addressSchema = z.object({
+    street: z.string().trim(),
+    number: z.number().int().positive(),
+    postal: z.string().trim().length(5),
+    city: z.string().trim(),
+    province: z.string().trim()
+})
+
 export const userRegisterSchema = z.object(
     {
         body: z.object({
@@ -36,7 +44,8 @@ export const userOnboardingSchema = z.object(
             nif: z.string().refine((nif_val) => {
                 return /^[0-9]{8}[A-Z]$/.test(nif_val) || 
                 /^[XYZ][0-9]{7}[A-Z]$/.test(nif_val)
-            })
+            }),
+            address: addressSchema
         })
     }
 )

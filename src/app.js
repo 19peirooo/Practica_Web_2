@@ -4,7 +4,7 @@ import cors from 'cors'
 import dbConnect from './config/db.js'
 import routes from './routes/index.js'
 import helmet from 'helmet'
-import mongoSanitize from 'express-mongo-sanitize'
+import { sanitizeBody, limitStringLength } from './middleware/sanitize.middleware.js';
 import rateLimit from 'express-rate-limit'
 import { errorHandler, notFound } from './middleware/error.middleware.js'
 
@@ -26,9 +26,10 @@ app.use(helmet())
 
 // Middleware globales
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true }));
-app.use(mongoSanitize())
+app.use(sanitizeBody);
+app.use(limitStringLength(5000));
 app.use(limiter)
 
 // Archivos estáticos

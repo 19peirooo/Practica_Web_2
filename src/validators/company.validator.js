@@ -1,4 +1,4 @@
-import { flattenError, z } from "zod"
+import { z } from "zod"
 
 const addressSchema = z.object({
     street: z.string().trim(),
@@ -8,22 +8,18 @@ const addressSchema = z.object({
     province: z.string().trim()
 })
 
-const companySchema = z.object(
+export const companyOnboardingSchema = z.object(
     {
-        body: z.object({
-            name: z.string(),
-            cif: z.string().regex(/^[ABFGJ]-[0-9]{7}[A-Z0-9]$/),
-            address: addressSchema,
-            isFreelance: z.literal(false)
-        })
+        body: z.discriminatedUnion("isFreelance", [
+            z.object({
+                isFreelance: z.literal(true)
+            }),
+            z.object({
+                isFreelance: z.literal(false),
+                name: z.string(),
+                cif: z.string().regex(/^[ABFGJ]-[0-9]{7}[A-Z0-9]$/),
+                address: addressSchema
+            })
+        ])
     }
 )
-
-const freelanceSchema = z.object({
-  isFreelance: z.literal(true)
-})
-
-export const companyOnboardingSchema = z.discriminatedUnion("isFreelance", [
-  freelanceSchema,
-  companySchema
-])

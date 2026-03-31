@@ -142,14 +142,15 @@ export async function loadUserData(req, res, next) {
      
     try {
 
-        const { name, lastName, nif } = req.body
+        const { name, lastName, nif, address } = req.body
 
         await User.findByIdAndUpdate(
             req.user._id,
             {
                 name: name,
                 lastName: lastName,
-                nif: nif
+                nif: nif,
+                address: address
             },
             {runValidators: true}
         )

@@ -1,12 +1,12 @@
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OWNhZjA2MTUyMGY3OTNhMDQ2NzQzMjgiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NzQ5MDc0ODksImV4cCI6MTc3NDkwODM4OX0.MZW5Q5sTri4_W7xdWw4_mCXBe2CSgVR14Tu0-xVYuuQ
-@refreshToken = 9b8765965e23bdd0972f8d05aef240c1cbb4c8df68261f81b67dcf19fa9bb3d1dd4ed444bf5d8c160fcdfcaebf6f9f784c02db18de4a15582d964686f4455783
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OWNiYmEzYzRhNjY2MjE4ZGVlMDNhNjIiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NzQ5NjkxODIsImV4cCI6MTc3NDk3MDA4Mn0.LC76NJhctE3j-DZHS0Ud0j6KlfLN5zlCKD4rdb0gGfk
+@refreshToken = 208e0bd911ec4f42357918a4c63735543f186802b156f5af7f9ee8eec1784affb237b85eb02be34ea595fa5e6057bbb75f3e95231e3ef6db317277e7aca439d2
 
 ### 1. Registrar un usuario válido
 POST http://localhost:3000/api/user/register
 Content-Type: application/json
 
 {
-  "email": "admin@mail.com",
+  "email": "test2@mail.com",
   "password": "12345678"
 }
 
@@ -18,7 +18,7 @@ Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-  "verificationCode": "427870"
+  "verificationCode": "257840"
 }
 
 ###
@@ -42,7 +42,14 @@ Authorization: Bearer {{token}}
 {
   "name": "Test",
   "lastName": "Usuario",
-  "nif": "12345678A"
+  "nif": "12345688A",
+  "address": {
+    "street":"y",
+    "number": 1,
+    "postal": "00000",
+    "city": "x",
+    "province": "x"
+  }
 }
 
 ###
@@ -53,16 +60,26 @@ Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
+  "isFreelance": false,
   "name": "compañia1",
-  "cif": "A-12344978",
+  "cif": "A-12345678",
   "address": {
     "street":"x",
     "number": 1,
     "postal": "00000",
     "city": "x",
     "province": "x"
-  },
-  "isFreelance": false
+  }
+}
+
+###
+
+PATCH http://localhost:3000/api/user/company
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "isFreelance": true
 }
 
 ###
@@ -120,8 +137,8 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "oldPassword": "JAJAJAJJAJAJAJAJ",
-  "newPassword": "12345678"
+  "oldPassword": "12345678",
+  "newPassword": "123456786"
 }
 
 ###
