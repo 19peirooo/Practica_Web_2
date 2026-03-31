@@ -1,18 +1,29 @@
-import { z } from "zod"
+import { flattenError, z } from "zod"
 
-export const companyOnboardingSchema = z.object(
+const addressSchema = z.object({
+    street: z.string().trim(),
+    number: z.number().int().positive(),
+    postal: z.string().trim().length(5),
+    city: z.string().trim(),
+    province: z.string().trim()
+})
+
+const companySchema = z.object(
     {
         body: z.object({
             name: z.string(),
             cif: z.string().regex(/^[ABFGJ]-[0-9]{7}[A-Z0-9]$/),
-            address: z.object({
-                street: z.string().trim(),
-                number: z.number().int().positive(),
-                postal: z.string().trim().length(5),
-                city: z.string().trim(),
-                province: z.string().trim()
-            }),
-            isFreelance: z.boolean()
+            address: addressSchema,
+            isFreelance: z.literal(false)
         })
     }
 )
+
+const freelanceSchema = z.object({
+  isFreelance: z.literal(true)
+})
+
+export const companyOnboardingSchema = z.discriminatedUnion("isFreelance", [
+  freelanceSchema,
+  companySchema
+])

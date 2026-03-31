@@ -167,35 +167,43 @@ export async function loadCompanyData(req, res, next) {
     try {
 
         const user = req.user
+        const data = req.body
 
         if (user.company) {
             throw AppError.badRequest('No se pudo hacer onboarding compañia')
         }
 
-        const {name, cif, address, isFreelance} = req.body
+        const cifToSearch = data.isFreelance ? user.nif : data.cif
 
-        const companyStored = await Company.findOne({cif: cif})
+        const companyStored = await Company.findOne({cif: cifToSearch})
 
         if (!companyStored) {
 
-            let company = null
+            let company
 
-            if (isFreelance) {
+            if (data.isFreelance) {
+
+                if (!user.address) {
+                    throw AppError.badRequest('No se pudo hacer onboarding compañia')
+                }
+
                 company = await Company.create(
                     {
                         owner: user._id,
                         name: user.name,
                         cif: user.nif,
-                        address: user?.address || address 
+                        address: user?.address, 
+                        isFreelance: true
                     }
                 )
             } else {
                 company = await Company.create(
                     {
                         owner: user._id,
-                        name: name,
-                        cif: cif,
-                        address: address
+                        name: data.name,
+                        cif: data.cif,
+                        address: data.address,
+                        isFreelance: false
                     }
                 )
             }
