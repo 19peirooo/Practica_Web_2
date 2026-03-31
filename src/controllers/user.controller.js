@@ -2,12 +2,12 @@ import Company from "../models/Company.js";
 import RefreshToken from "../models/refreshToken.js";
 import User from "../models/User.js"
 import ee from "../services/notification.service.js";
-import { handleHttpError } from "../utils/handleError.js";
 import { generateAccessToken, generateRefreshToken, getRefreshTokenExpiry } from "../utils/handleJwt.js";
 import { compare, encrypt } from "../utils/handlePassword.js";
 import { generateVerificationCode } from "../utils/handleVerificationCode.js";
+import { AppError } from "../utils/AppError.js";
 
-export async function registerUser(req, res) {
+export async function registerUser(req, res, next) {
     
     try {
         let new_user = req.body
@@ -16,8 +16,7 @@ export async function registerUser(req, res) {
         const foundUser = await User.findOne({email: new_email}).lean()
 
         if (foundUser) {
-            handleHttpError(res,"ERROR: No se pudo registrar usuario",409)
-            return
+            throw AppError.conflict('Email ya Registrado')
         }
 
         const hashed_pswd = await encrypt(new_user.password)
@@ -49,13 +48,12 @@ export async function registerUser(req, res) {
         })
 
     } catch (error) {
-        console.error(error)
-        handleHttpError(res,"ERROR: No se pudo registrar usuario",500)
+        next(error)
     }
 
 }
 
-export async function validateEmail(req, res) {
+export async function validateEmail(req, res, next) {
 
     try {
         
@@ -64,20 +62,20 @@ export async function validateEmail(req, res) {
         const user = req.user
 
         if (user.status === 'verified') {
-            return handleHttpError(res, 'Usuario ya verificado', 400)
+            throw AppError.badRequest('Usuario ya verificado')
         }
 
         if (user.verificationCode !== verificationCode) {
 
             const attempts = user.verificationAttempts - 1 < 0 ? 0 : user.verificationAttempts - 1;
-
-            if (attempts <= 0) {
-                handleHttpError(res, "ERROR: Se han agotado los intentos de validación", 429)
-            } else {
-                handleHttpError(res,"ERROR: No se pudo validar email",400)
-            }
             await User.findByIdAndUpdate(user._id, {verificationAttempts: attempts},{runValidators: true})
-            return
+            
+            if (attempts <= 0) {
+                throw AppError.tooManyRequests('Numero de Intentos Agotado')
+            } else {
+                throw AppError.badRequest('Verifación Incorrecta')
+            }
+            
         }
 
         await User.findByIdAndUpdate(user._id, {status: 'verified'}, {runValidators: true})
@@ -86,13 +84,12 @@ export async function validateEmail(req, res) {
         res.status(200).json({message: "Email Validado"})
 
     } catch (error) {
-        console.error(error)
-        handleHttpError(res,"ERROR: No se pudo validar mail",500)
+        next(error)
     }
 
 }
 
-export async function loginUser(req,res) {
+export async function loginUser(req, res, next) {
 
     try {
 
@@ -101,13 +98,13 @@ export async function loginUser(req,res) {
         const user = await User.findOne({email: email})
 
         if (!user) {
-            return handleHttpError(res,"Usuario no registrado",404)
+            throw AppError.notFound('User')
         }
 
         const match = await compare(password, user.password)
 
         if (!match) {
-            return handleHttpError(res,"Login Incorrecto",401)
+            throw AppError.unauthorized('Login Fallido')
         }
 
         const access_token = generateAccessToken(user)
@@ -136,13 +133,12 @@ export async function loginUser(req,res) {
         })
 
     } catch (error) {
-        console.error(error)
-        handleHttpError(res,"ERROR: No se pudo hacer login",500)
+        next(error)
     }
 
 }
 
-export async function loadUserData(req, res) {
+export async function loadUserData(req, res, next) {
      
     try {
 
@@ -161,20 +157,19 @@ export async function loadUserData(req, res) {
         res.status(200).json({message: "Onboarding de Usuario completado"})
 
     } catch (error) {
-        console.error(error)
-        handleHttpError(res,"ERROR: No se pudo hacer onboarding de usuario",500)
+        next(error)
     }
 
 }
 
-export async function loadCompanyData(req, res) {
+export async function loadCompanyData(req, res, next) {
 
     try {
 
         const user = req.user
 
         if (user.company) {
-            return handleHttpError(res, "No se pudo crear compañia", 400)
+            throw AppError.badRequest('No se pudo hacer onboarding compañia')
         }
 
         const {name, cif, address, isFreelance} = req.body
@@ -222,23 +217,22 @@ export async function loadCompanyData(req, res) {
         res.status(200).json({message: "Onboarding de la compañia completado"})
 
     } catch (error) {
-        console.error(error)
-        handleHttpError(res,"ERROR: No se pudo hacer onboarding de compañia",500)
+        next(error)
     }
 
 }
 
-export async function uploadLogo(req, res) {
+export async function uploadLogo(req, res, next) {
     try {
 
         const user = req.user
 
         if (!user.company) {
-            return handleHttpError(res, 'Usuario noo tiene compañia', 400)
+            throw AppError.badRequest('No se pudo actualizar logo')
         }
 
         if (!req.file) {
-            return handleHttpError(res, 'No se ha subido ningun archivo', 400)
+            throw AppError.badRequest('Falta logo')
         }
 
         const uploadPath = `${process.env.PUBLIC_URI}/uploads/${req.file.filename}`
@@ -252,12 +246,11 @@ export async function uploadLogo(req, res) {
         res.status(201).json({message: "Logo Actualizado"})
 
     } catch (error) {
-        console.error(error)
-        handleHttpError(res,"ERROR: No se pudo actualizar el logo",500)
+        next(error)
     }
 }
 
-export async function getUser(req, res) {
+export async function getUser(req, res, next) {
 
     try {
 
@@ -265,38 +258,36 @@ export async function getUser(req, res) {
         return res.status(200).json(user)
 
     }  catch (error) {
-        console.error(error)
-        handleHttpError(res,"ERROR: No se pudo acceder a usuario",500)
+        next(error)
     }
 
 }
 
-export async function refreshAccessToken(req, res) {
+export async function refreshAccessToken(req, res, next) {
     
     try {
         const { refreshToken } = req.body
 
         if (!refreshToken) {
-            return handleHttpError(res, "Falta refreshToken", 400)
+            throw AppError.badRequest('No se pudo refrescar token')
         }
 
         const storedToken = await RefreshToken.findOne({token: refreshToken}).populate('user')
 
         if (!storedToken || !storedToken.isActive()) {
-            return handleHttpError(res,"Refresh Token Expirado o Invalido", 401)
+            throw AppError.unauthorized('Token Invalido o Expirado')
         }
 
         const accessToken = generateAccessToken(storedToken.user)
 
         res.status(200).json({accessToken})
     } catch (error) {
-        console.error(error)
-        handleHttpError(res,"ERROR: No se pudo refrescar token",500)
+        next(error)
     }
 
 }
 
-export async function logout(req, res) {
+export async function logout(req, res, next) {
 
     try {
 
@@ -308,13 +299,12 @@ export async function logout(req, res) {
         res.status(200).json({message: "Logout Completado"})
 
     } catch (error) {
-        console.error(error)
-        handleHttpError(res,"ERROR: No se pudo hacer logout",500)
+        next(error)
     }
 
 }
 
-export async function deleteUser(req, res) {
+export async function deleteUser(req, res, next) {
     try {
 
         const softDelete = req.query.soft === 'true'
@@ -330,12 +320,11 @@ export async function deleteUser(req, res) {
         res.status(200).json({message: "Usuario Borrado con Exito"})
 
     } catch (error) {
-        console.error(error)
-        handleHttpError(res,"ERROR: No se pudo eliminar usuario",500)
+        next(error)
     }
 }
 
-export async function changePwd(req, res) {
+export async function changePwd(req, res, next) {
 
     try {
 
@@ -345,7 +334,7 @@ export async function changePwd(req, res) {
         const match = await compare(oldPassword, user.password)
 
         if (!match) {
-            return handleHttpError(res, 'La contraseña actual no es correcta', 400)
+            throw AppError.badRequest('No se pudo cambiar la contraseña')
         }
 
         const hashedPwd = await encrypt(newPassword)
@@ -359,13 +348,12 @@ export async function changePwd(req, res) {
         res.status(200).json({message: "Contraseña Cambiada Con Exito"})
 
     } catch (error) {
-        console.error(error)
-        handleHttpError(res,"ERROR: No se pudo cambiar contraseña",500)
+        next(error)
     }
 
 }
 
-export async function inviteUser(req, res) {
+export async function inviteUser(req, res, next) {
 
     try {
 
@@ -373,13 +361,13 @@ export async function inviteUser(req, res) {
         const { email, password } = req.body
 
         if (!user.company) {
-            return handleHttpError(res,'El usuario no tiene una compañia asignada', 400) 
+            throw AppError.badRequest('No se pudo invitar a usuario') 
         }
 
         const existingGuest = await User.findOne({email: email})
 
         if (existingGuest) {
-            return handleHttpError(res, 'Invitado ya Registrado', 409)
+            throw AppError.conflict('Invitado ya Registrado')
         }
 
         const hashedPwd = await encrypt(password)
@@ -396,8 +384,7 @@ export async function inviteUser(req, res) {
         res.status(201).json({message: "Usuario Invitado"})
 
     } catch (error) {
-        console.error(error)
-        handleHttpError(res,"ERROR: No se pudo invitar usuario",500)
+        next(error)
     }
 
 }
