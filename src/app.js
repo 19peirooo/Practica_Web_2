@@ -7,6 +7,8 @@ import helmet from 'helmet'
 import { sanitizeBody, limitStringLength } from './middleware/sanitize.middleware.js';
 import rateLimit from 'express-rate-limit'
 import { errorHandler, notFound } from './middleware/error.middleware.js'
+import morganBody from 'morgan-body'
+import { loggerStream } from './utils/handleLogger.js'
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
@@ -31,6 +33,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(sanitizeBody);
 app.use(limitStringLength(5000));
 app.use(limiter)
+
+morganBody(app, {
+  noColors: true,
+  skip: (req, res) => res.statusCode < 400, // Solo errores
+  stream: loggerStream
+});
 
 // Archivos estáticos
 app.use('/uploads', express.static('uploads'));
