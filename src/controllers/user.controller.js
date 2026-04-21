@@ -1,11 +1,13 @@
-import Company from "../models/Company.js";
-import RefreshToken from "../models/refreshToken.js";
-import User from "../models/User.js"
+import Company from "../models/company.models.js";
+import RefreshToken from "../models/refreshtoken.models.js";
+import User from "../models/user.models.js"
 import ee from "../services/notification.service.js";
 import { generateAccessToken, generateRefreshToken, getRefreshTokenExpiry } from "../utils/handleJwt.js";
 import { compare, encrypt } from "../utils/handlePassword.js";
 import { generateVerificationCode } from "../utils/handleVerificationCode.js";
 import { AppError } from "../utils/AppError.js";
+import { sendSlackNotification } from "../utils/handleLogger.js";
+import cloudinaryService from '../services/cloudinary.service.js';
 
 export async function registerUser(req, res, next) {
     
@@ -38,6 +40,8 @@ export async function registerUser(req, res, next) {
         })
         
         ee.emit('user:registered', user.email)
+
+        await sendSlackNotification("✅ Registro Completado")
 
         res.status(201).json({
             email: user.email,
@@ -234,29 +238,35 @@ export async function loadCompanyData(req, res, next) {
 export async function uploadLogo(req, res, next) {
     try {
 
-        const user = req.user
-
-        if (!user.company) {
-            throw AppError.badRequest('No se pudo actualizar logo')
-        }
+        const user = req.user;
 
         if (!req.file) {
-            throw AppError.badRequest('Falta logo')
+            return AppError.badRequest('No se envió imagen');
         }
 
-        const uploadPath = `${process.env.PUBLIC_URI}/uploads/${req.file.filename}`
+        // Subir a Cloudinary
+        const result = await cloudinaryService.uploadAvatar(
+            req.file.buffer,
+            user._id
+        );
 
-        await Company.findByIdAndUpdate(
+        // Guardar URL en el usuario
+        const company = await Company.findByIdAndUpdate(
             user.company,
-            {logo: uploadPath},
-            {runValidators: true}
-        )
+            {
+                logo: result.secure_url,
+                logoPublicId: result.public_id
+            },
+            { new: true }
+        );
 
-        res.status(201).json({message: "Logo Actualizado"})
-
-    } catch (error) {
-        next(error)
-    }
+        res.status(201).json({
+            message: 'Avatar actualizado',
+            logo: company.logo
+        });
+  } catch (error) {
+        next(error);
+  }
 }
 
 export async function getUser(req, res, next) {

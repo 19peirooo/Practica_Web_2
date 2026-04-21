@@ -1,5 +1,5 @@
 // src/middleware/session.middleware.js
-import User from '../models/User.js';
+import User from '../models/user.models.js';
 import { verifyAccessToken } from '../utils/handleJwt.js';
 import { handleHttpError } from '../utils/handleError.js';
 

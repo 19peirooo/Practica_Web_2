@@ -44,6 +44,10 @@ const companySchema = new mongoose.Schema(
             type: String,
             trim: true
         },
+        logoPublicId: {
+            type: String,
+            trim: true
+        },
         isFreelance: {
             type: Boolean,
             default: false
