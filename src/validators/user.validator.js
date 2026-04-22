@@ -3,7 +3,7 @@ import { z } from "zod"
 const addressSchema = z.object({
     street: z.string().trim(),
     number: z.number().int().positive(),
-    postal: z.string().trim().length(5),
+    postal: z.string().trim(),
     city: z.string().trim(),
     province: z.string().trim()
 })

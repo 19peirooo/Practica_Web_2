@@ -60,7 +60,7 @@ const clientSchema = new mongoose.Schema({
 
 clientSchema.plugin(softDeletePlugin)
 
-clientSchema.index({cif : 1}, {unique: true})
+clientSchema.index({cif : 1})
 clientSchema.index({name: 1})
 
 const Client = mongoose.model('Client', clientSchema);
