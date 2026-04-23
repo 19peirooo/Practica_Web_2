@@ -1,4 +1,3 @@
-import { tr } from "zod/v4/locales";
 import Client from "../models/client.models.js";
 import Company from "../models/company.models.js"
 import { AppError } from "../utils/AppError.js";
@@ -131,6 +130,8 @@ export async function getClient(req, res) {
 export async function deleteClient(req, res) {
     
 
+    const company = req.user.company
+
     const softDelete = req.query.soft === 'true'
 
     const {id} = req.params
@@ -139,7 +140,7 @@ export async function deleteClient(req, res) {
         throw AppError.badRequest("No se pudo eliminar cliente")
     }
 
-    const client = await Client.findById(id)
+    const client = await Client.find({_id: id, company: company})
 
     if (!client) {
         throw AppError.notFound("No se pudo eliminar cliente")

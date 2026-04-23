@@ -1,4 +1,3 @@
-// src/app.js
 import express from 'express'
 import cors from 'cors'
 import dbConnect from './config/db.js'
@@ -11,12 +10,14 @@ import morganBody from 'morgan-body'
 import morgan from 'morgan'
 import { loggerStream } from './utils/handleLogger.js'
 import { env } from './config/env.js'
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpecs from './docs/swagger.js';
 
 const isProduction = process.env.NODE_ENV === 'production'
 
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 100, // 100 peticiones por ventana
+  windowMs: 15 * 60 * 1000,
+  max: 100,
   message: {
     error: true,
     message: 'Demasiadas peticiones, intenta en 15 minutos',
@@ -55,6 +56,7 @@ app.use('/uploads', express.static('uploads'));
 
 // Rutas de la API
 app.use('/api', routes);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 
 // Manejo de errores
 app.use(notFound);
