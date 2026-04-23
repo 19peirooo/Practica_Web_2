@@ -8,7 +8,11 @@ import { sanitizeBody, limitStringLength } from './middleware/sanitize.middlewar
 import rateLimit from 'express-rate-limit'
 import { errorHandler, notFound } from './middleware/error.middleware.js'
 import morganBody from 'morgan-body'
+import morgan from 'morgan'
 import { loggerStream } from './utils/handleLogger.js'
+import { env } from './config/env.js'
+
+const isProduction = process.env.NODE_ENV === 'production'
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
@@ -34,6 +38,12 @@ app.use(sanitizeBody);
 app.use(limitStringLength(5000));
 app.use(limiter)
 
+if (isProduction) {
+  app.use(morgan('combined'))
+} else {
+  app.use('dev')
+}
+
 morganBody(app, {
   noColors: true,
   skip: (req, res) => res.statusCode < 400, // Solo errores
@@ -56,7 +66,7 @@ const PORT = process.env.PORT || 3000;
 const startServer = async () => {
   await dbConnect();
   app.listen(PORT, () => {
-    console.log(`🚀 Servidor en http://localhost:${PORT}`);
+    console.log(`🚀 Servidor en http://localhost:${env.PORT} [${env.NODE_ENV}]`);
   });
 };
 

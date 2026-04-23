@@ -5,7 +5,13 @@
   "main": "index.js",
   "scripts": {
     "dev": "node --watch --env-file=.env src/app.js",
-    "start": "node --env-file=.env src/app.js"
+    "start": "node src/app.js",
+    "build": "echo 'No build step required'",
+    "test": "node --test",
+    "lint": "eslint ."
+  },
+  "engines": {
+    "node": ">=22.0.0"
   },
   "repository": {
     "type": "git",
@@ -30,6 +36,7 @@
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.3.1",
+    "morgan": "^1.10.1",
     "morgan-body": "^2.6.9",
     "multer": "^2.1.1",
     "pdfkit": "^0.18.0",

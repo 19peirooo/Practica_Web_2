@@ -3,7 +3,7 @@ import Client from "../models/client.models.js";
 import Company from "../models/company.models.js"
 import { AppError } from "../utils/AppError.js";
 
-export async function createClient(req,res,next) {
+export async function createClient(req,res) {
 
     try {
 
@@ -12,13 +12,13 @@ export async function createClient(req,res,next) {
         const {name, cif, email, address} = req.body
 
         if (!user.company) {
-            return AppError.badRequest("Usuario No tiene compañia asignada")
+            throw AppError.badRequest("No se pudo crear cliente")
         }
 
-        const dupClient = Client.findOne({company: company, cif: req.body.cif})
+        const dupClient = await Client.findOne({company: company, cif: req.body.cif})
 
         if (dupClient) {
-            return AppError.conflict("Usuario ya existente")
+            throw AppError.conflict("No se pudo crear cliente")
         }
 
         await Client.create({
@@ -33,22 +33,26 @@ export async function createClient(req,res,next) {
         res.status(201).json({message: "Cliente Creado"})
 
     } catch (error) {
-        next(error)
+        throw AppError.internal('No se pudo crear cliente')
     }
 
 }
 
-export async function updateClient(req,res,next) {
+export async function updateClient(req,res) {
     
     try {
 
+        const company = req.user.company
+
+        if (!company) throw AppError.badRequest("No se pudo actualizar cliente")
+        
         const {id} = req.params;
 
-        if (!id) return AppError.badRequest("No hay id");
+        if (!id) throw AppError.badRequest("No hay id");
 
-        const existingClient = await Client.findOne({_id: id})
+        const existingClient = await Client.findOne({_id: id, company: company})
 
-        if (!existingClient) return AppError.notFound("Cliente no encontrado");
+        if (!existingClient) throw AppError.notFound("No se pudo actualizar cliente");
         
         await Client.findByIdAndUpdate(
             id,
@@ -59,7 +63,7 @@ export async function updateClient(req,res,next) {
         res.status(200).json({message: "Cliente Actualizado"})
 
     } catch (error) {
-        next(error)
+        throw AppError.internal("No se pudo actualizar cliente")
     }
 
 }

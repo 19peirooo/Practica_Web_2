@@ -2,6 +2,8 @@
 import mongoose from 'mongoose';
 import { AppError } from '../utils/AppError.js';
 
+const isProduction = process.env.NODE_ENV === 'production'
+
 export const notFound = (req, res, next) => {
   next(AppError.notFound(`Ruta ${req.method} ${req.originalUrl}`));
 };
@@ -9,14 +11,12 @@ export const notFound = (req, res, next) => {
 export const errorHandler = (err, req, res, next) => {
   console.error('❌ Error:', err.message);
   
-  if (err.isOperational) {
-    return res.status(err.statusCode).json({
-      error: true,
-      message: err.message,
-      code: err.code,
-      ...(err.details && { details: err.details })
-    });
-  }
+  res.status(err.status || 500).json({
+    error: true,
+    message: isProduction ? 'Error interno' : err.message,
+    ...(isProduction ? {} : { stack: err.stack })
+
+  });
   
   if (err instanceof mongoose.Error.ValidationError) {
     const details = Object.values(err.errors).map(e => ({
