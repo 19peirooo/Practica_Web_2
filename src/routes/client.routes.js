@@ -9,10 +9,10 @@ const router = Router()
 
 router.post('/',authMiddleware, validate(clientCreateSchema),createClient)
 router.put('/:id',authMiddleware, updateClient)
+router.get('/archived',authMiddleware, getArchivedClients)
 router.get('/', authMiddleware,getUserClients)
 router.get('/:id',authMiddleware,getClient)
 router.delete('/:id', authMiddleware, deleteClient)
-router.get('/archived',authMiddleware, getArchivedClients)
 router.patch('/:id/restore',authMiddleware,restoreClient)
 
 export default router;

@@ -2,7 +2,7 @@
 import mongoose from 'mongoose';
 
 const dbConnect = async () => {
-  const DB_URI = process.env.DB_URI;
+  const DB_URI = process.env.DATABASE_URL;
   
   if (!DB_URI) {
     console.error('❌ DB_URI no está definida en .env');

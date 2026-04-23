@@ -41,7 +41,7 @@ app.use(limiter)
 if (isProduction) {
   app.use(morgan('combined'))
 } else {
-  app.use('dev')
+  app.use(morgan('dev'))
 }
 
 morganBody(app, {
