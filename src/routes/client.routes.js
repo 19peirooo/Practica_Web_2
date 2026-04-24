@@ -190,6 +190,24 @@ router.get('/archived',authMiddleware, getArchivedClients)
  *           example: Garcia
  *         description: Búsqueda parcial por nombre
  *       - in: query
+ *         name: cif
+ *         schema:
+ *           type: string
+ *           example: B-23456789
+ *         description: Búsqueda parcial por cif
+ *       - in: query
+ *         name: email
+ *         schema:
+ *           type: string
+ *           example: Garcia
+ *         description: Búsqueda parcial por email
+ *       - in: query
+ *         name: phone
+ *         schema:
+ *           type: string
+ *           example: 123456789
+ *         description: Búsqueda parcial por telefono
+ *       - in: query
  *         name: sort
  *         schema:
  *           type: string
