@@ -27,7 +27,6 @@ export const clientUpdateSchema = z.object(
         }),
         body: z.object({
             name: z.string().trim().optional(),
-            cif: z.string().regex(/^[ABFGJ]-[0-9]{7}[A-Z0-9]$/).optional(),
             email: z.email("Email Invalido").transform((e) => e.toLowerCase().trim()).optional(),
             address: addressSchema.optional(),
             phone: z.string().optional()
@@ -58,7 +57,7 @@ export const getClientSchema = z.object({
 export const deleteClientSchema = z.object(
     {
         query: z.object({
-            soft: z.string()
+            soft: z.enum(['true','false'])
         }).strict().optional(),
         params: z.object({
             id: z.string()

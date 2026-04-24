@@ -55,7 +55,7 @@ const projectSchema = new mongoose.Schema({
 projectSchema.plugin(softDeletePlugin)
 
 // Índices útiles
-projectSchema.index({ company: 1, projectCode: 1 }, { unique: true }); // unicidad por empresa
+projectSchema.index({ company: 1, projectCode: 1 }, { unique: true }); 
 projectSchema.index({ client: 1 });
 projectSchema.index({ user: 1 });
 

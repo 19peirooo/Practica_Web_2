@@ -212,7 +212,7 @@ const options = {
           properties: {
             error: { type: 'boolean', example: true },
             message: { type: 'string', example: 'Error message' },
-            code: { type: 'string', example: "NOT_FOUND"}
+            code: { type: 'string', example: "ERROR_CODE"}
           }
         }
       }

@@ -6,7 +6,6 @@ export async function createClient(req,res) {
 
     const user = req.user
     const company = req.user.company
-    const {name, cif, email, address} = req.body
 
     if (!user.company) {
         throw AppError.badRequest("No se pudo crear cliente")
@@ -18,14 +17,10 @@ export async function createClient(req,res) {
         throw AppError.conflict("No se pudo crear cliente")
     }
 
-    await Client.create({
-        user: user,
-        company: company,
-        name: name,
-        cif: cif,
-        email: email,
-        address: address
-    })
+    req.body.user = user
+    req.body.company = company
+
+    await Client.create(req.body)
 
     res.status(201).json({message: "Cliente Creado"})
 
@@ -138,7 +133,6 @@ export async function getClient(req, res) {
 }
 
 export async function deleteClient(req, res) {
-    
 
     const company = req.user.company
 
