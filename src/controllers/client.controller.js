@@ -52,8 +52,8 @@ export async function updateClient(req,res) {
 
 export async function getUserClients(req, res) {
 
-    const page = parseInt(req.query.page) || 1      
-    const limit = parseInt(req.query.limit) || 10
+    const page = req.query.page || 1      
+    const limit = req.query.limit || 10
     const skip = (page - 1) * limit
 
     const user = req.user

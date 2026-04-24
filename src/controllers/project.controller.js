@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Client from "../models/client.models.js"
 import Project from "../models/project.models.js"
 import { AppError } from "../utils/AppError.js";
@@ -57,11 +58,12 @@ export async function updateProject(req, res) {
 
 export async function getCompanyProjects(req, res) {
     
-    const page = parseInt(req.query.page) || 1      
-    const limit = parseInt(req.query.limit) || 10
+    const page = req.query.page || 1      
+    const limit = req.query.limit || 10
     const skip = (page - 1) * limit
 
     const user = req.user
+    const query = req.query
     
     if (!user.company) {
         throw AppError.badRequest("No se puedo conseguir projectos de la compañia") 
@@ -71,25 +73,25 @@ export async function getCompanyProjects(req, res) {
         company: user.company
     }
 
-    if (req.name) {
-        filter.name = { $regex: req.name, $options: "i" }
+    if (query.name) {
+        filter.name = { $regex: query.name, $options: "i" }
     }
     
-    if (req.projectCode) {
-        filter.projectCode = {$regex: req.projectCode , $options: "i"}
+    if (query.projectCode) {
+        filter.projectCode = {$regex: query.projectCode , $options: "i"}
     }
 
-    if (req.client) {
-        filter.client = req.client
+    if (query.client) {
+        filter.client = new mongoose.Types.ObjectId(query.client)
     }
 
-    if (req.active) {
-        filter.active = req.active === 'true'
+    if (query.active) {
+        filter.active = query.active === 'true'
     }
 
     const sortFilter = {}
-    if (req.sort) {
-        sortFilter[req.sort] = 1
+    if (query.sort) {
+        sortFilter[query.sort] = 1
     }
 
     const projects = await Project.find(filter)

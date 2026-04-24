@@ -37,8 +37,8 @@ export const clientUpdateSchema = z.object(
 export const getClientsSchema = z.object(
     {
         query: z.object({
-            page: z.number().int().min(1).optional(),
-            limit: z.number().int().min(1).optional(),
+            page: z.coerce.number().int().min(1).optional(),
+            limit: z.coerce.number().int().min(1).optional(),
             name: z.string().trim().optional(),
             cif: z.string().regex(/^[ABFGJ]-[0-9]{7}[A-Z0-9]$/).optional(),
             email: z.email("Email Invalido").transform((e) => e.toLowerCase().trim()).optional(),
@@ -57,8 +57,8 @@ export const getClientSchema = z.object({
 export const deleteClientSchema = z.object(
     {
         query: z.object({
-            soft: z.enum(['true','false'])
-        }).strict().optional(),
+            soft: z.enum(['true','false']).optional()
+        }).strict(),
         params: z.object({
             id: z.string()
         })
