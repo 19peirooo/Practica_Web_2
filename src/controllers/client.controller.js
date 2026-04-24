@@ -61,8 +61,6 @@ export async function getUserClients(req, res) {
     const limit = parseInt(req.query.limit) || 10
     const skip = (page - 1) * limit
 
-    console.log(`${page} ${limit}`)
-
     const user = req.user
     
     if (!user.company) {
@@ -73,10 +71,22 @@ export async function getUserClients(req, res) {
         company: user.company
     }
 
-    const {name , sort} = req.query
+    const {name, cif, email, phone, sort} = req.query
 
     if (name) {
         filter.name = {$regex: name, $options: "i"}
+    }   
+
+    if (cif) {
+        filter.cif = {$regex: cif, $options: "i"}
+    }
+
+    if (email) {
+        filter.email = {$regex: email, $options: "i"}
+    }
+
+    if (phone) {
+        filter.phone = {$regex: phone, $options: "i"}
     }
 
     const sortFilter = {}

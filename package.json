@@ -7,7 +7,9 @@
     "dev": "node --watch --env-file=.env src/app.js",
     "start": "node src/app.js",
     "build": "echo 'No build step required'",
-    "test": "node --test",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --forceExit --detectOpenHandles",
+    "test:watch": "npm test -- --watch",
+    "test:coverage": "npm test -- --coverage",
     "lint": "eslint ."
   },
   "engines": {
@@ -46,5 +48,9 @@
     "swagger-ui-express": "^5.0.1",
     "ws": "^8.20.0",
     "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "jest": "^30.3.0",
+    "supertest": "^7.2.2"
   }
 }

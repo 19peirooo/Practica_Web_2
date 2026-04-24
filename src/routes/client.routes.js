@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { validate } from "../middleware/validate.middleware.js";
 import authMiddleware from "../middleware/session.middleware.js"
-import { clientCreateSchema } from "../validators/client.validator.js";
+import { clientCreateSchema, clientUpdateSchema, deleteClientSchema, getClientSchema, getClientsSchema, restoreClientSchema } from "../validators/client.validator.js";
 import { createClient, deleteClient, getArchivedClients, getClient, getUserClients, restoreClient, updateClient } from "../controllers/client.controller.js";
 import checkRol from "../middleware/role.middleware.js";
 
@@ -97,7 +97,7 @@ router.post('/',authMiddleware,checkRol(['admin']), validate(clientCreateSchema)
  *                   type: string
  *                   example: Cliente Actualizado
  *       400:
- *         description: Datos inválidos o usuario sin compañía
+ *         description: Datos inválidos, usuario sin compañía o peticion invalida
  *         content:
  *           application/json:
  *             schema:
@@ -122,7 +122,7 @@ router.post('/',authMiddleware,checkRol(['admin']), validate(clientCreateSchema)
  *                $ref: '#/components/schemas/Error'
  * 
  */
-router.put('/:id',authMiddleware,checkRol(['admin']), updateClient)
+router.put('/:id',authMiddleware,checkRol(['admin']),validate(clientUpdateSchema), updateClient)
 
 /**
  * @openapi
@@ -214,7 +214,7 @@ router.get('/archived',authMiddleware, getArchivedClients)
  *                   items:
  *                     $ref: '#/components/schemas/Client'
  *       400:
- *         description: Usuario sin compañía
+ *         description: Usuario sin compañía o petición invalida
  *         content:
  *           application/json:
  *             schema:
@@ -226,7 +226,7 @@ router.get('/archived',authMiddleware, getArchivedClients)
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/', authMiddleware,getUserClients)
+router.get('/', authMiddleware,validate(getClientsSchema),getUserClients)
 
 /**
  * @openapi
@@ -252,7 +252,7 @@ router.get('/', authMiddleware,getUserClients)
  *             schema:
  *               $ref: '#/components/schemas/Client'
  *       400:
- *         description: ID inválido o usuario sin compañía
+ *         description: ID inválido, usuario sin compañía o peticion invalida
  *         content:
  *           application/json:
  *             schema:
@@ -270,7 +270,7 @@ router.get('/', authMiddleware,getUserClients)
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/:id',authMiddleware,getClient)
+router.get('/:id',authMiddleware,validate(getClientSchema),getClient)
 
 /**
  * @openapi
@@ -307,7 +307,7 @@ router.get('/:id',authMiddleware,getClient)
  *                   type: string
  *                   example: Usuario eliminado
  *       400:
- *         description: Datos inválidos
+ *         description: Datos inválidos o petición invalida
  *         content:
  *           application/json:
  *             schema:
@@ -331,7 +331,7 @@ router.get('/:id',authMiddleware,getClient)
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.delete('/:id', authMiddleware,checkRol(['admin']), deleteClient)
+router.delete('/:id', authMiddleware,checkRol(['admin']),validate(deleteClientSchema), deleteClient)
 
 /**
  * @openapi
@@ -362,7 +362,7 @@ router.delete('/:id', authMiddleware,checkRol(['admin']), deleteClient)
  *                   type: string
  *                   example: Cliente Recuperado
  *       400:
- *         description: Datos inválidos
+ *         description: Datos inválidos o petición invalida
  *         content:
  *           application/json:
  *             schema:
@@ -386,6 +386,6 @@ router.delete('/:id', authMiddleware,checkRol(['admin']), deleteClient)
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.patch('/:id/restore',authMiddleware,checkRol(['admin']),restoreClient)
+router.patch('/:id/restore',authMiddleware,checkRol(['admin']), validate(restoreClientSchema), restoreClient)
 
 export default router;
