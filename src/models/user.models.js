@@ -92,7 +92,6 @@ userSchema.set('toJSON', {
   virtuals: true,
   versionKey: false,
   transform: (doc, ret) => {
-    delete ret._id
     delete ret.id
     return ret
   }

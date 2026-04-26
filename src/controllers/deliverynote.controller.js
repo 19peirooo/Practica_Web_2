@@ -4,7 +4,9 @@ import { buffer } from "stream/consumers"
 import { AppError } from "../utils/AppError.js"
 import Project from "../models/project.models.js"
 import DeliveryNote from "../models/deliverynote.models.js"
+import Company from "../models/company.models.js"
 import mongoose from "mongoose"
+import { generatePdf } from "../utils/handlePDF.js"
 
 export async function createDeliveryNote(req,res) {
     
@@ -53,7 +55,7 @@ export async function getDeliveryNotes(req, res) {
             signed, signedFrom, signedTo, sort} = req.query
 
     if (!user.company) {
-        throw AppError.badRequest("No se puedo conseguir projectos de la compañia") 
+        throw AppError.badRequest("No se puedo conseguir albaranes del proyecto") 
     }
 
     const filter = {
@@ -147,13 +149,9 @@ export async function getDeliveryNote(req, res) {
     const {id} = req.params
     const user = req.user
 
-    if (!id) {
-        throw AppError.badRequest("No se pudo buscar projecto")
-    }
+    if (!id) throw AppError.badRequest("No se pudo buscar albaran")
 
-    if (!user.company) {
-        throw AppError.badRequest("No se pudo buscar projecto")
-    }
+    if (!user.company) throw AppError.badRequest("No se pudo buscar albaran")
 
     const albaran = await DeliveryNote.findOne({
         _id: id,
@@ -165,7 +163,7 @@ export async function getDeliveryNote(req, res) {
     .populate('project', 'name projectCode')
 
     if (!albaran) {
-        throw AppError.notFound("No se pudo buscar projecto")
+        throw AppError.notFound("No se pudo buscar albaran")
     }
     
     res.status(200).json(albaran)
@@ -173,21 +171,43 @@ export async function getDeliveryNote(req, res) {
 
 export async function returnPdf(req, res) {
 
-    var doc = new PDFDocument()
+    const user = req.user
+    const company = user.company
+    const { id } = req.params
 
+    if (!company || !id) throw AppError.badRequest("No se pudo descargar pdf")
+
+    const albaran = await DeliveryNote.findById(id)
+    .populate('user', 'email name lastName')
+    .populate('company', 'name cif')
+    .populate('client', 'name cif')
+    .populate('project', 'name projectCode')
+
+    const isOwner = albaran.user._id.equals(user._id)
+    const isSameCompany = albaran.company._id.equals(company)
+    const isGuest = user.role === 'guest'
+
+    console.log(`${isOwner} ${isSameCompany} ${isGuest}`)
+
+    if (!isOwner && !(isSameCompany && isGuest)) throw AppError.forbidden("No se pudo descargar pdf")
+
+    // TODO - Descargar PDF firmado
+    if (albaran.signed && albaran.pdfUrl) {
+
+    }
+
+    const pdfBuffer = await generatePdf(albaran)
     res.setHeader('Content-Type','application/pdf')
-    res.setHeader('Content-Disposition', 'attachment; filename="albaransinfirma.pdf"')
+    res.setHeader('Content-Disposition',`attachment; filename="deliverynote_${id}.pdf"`)
 
-    doc.pipe(res)
+    const pdfResult = await cloudinaryService.uploadBuffer(pdfBuffer, {
+        folder: 'pdfs', resource_type: 'raw', format: 'pdf', access_mode: 'public'
+    })
 
-    doc.text('Aprendiendo a usar pdfkit u cloudinary',100,450)
-    doc.circle(280,200,50).fill("#6600FF")
-    doc.end()
-
-    res.status(200).json()
+    res.status(200).json('PDF Descargado')
 }
 
-export async function signPdf(req,res,next) {
+export async function signPdf(req,res) {
 
     if (!req.file) {
         return AppError.badRequest("No se subio firma")
@@ -211,4 +231,31 @@ export async function signPdf(req,res,next) {
         folder: 'signatures'
     })
 
+}
+
+export async function deleteDeliveryNote(req, res) {
+
+    const company = req.user.company
+
+    const softDelete = req.query.soft === 'true'
+
+    const {id} = req.params
+
+    if (!id) {
+        throw AppError.badRequest("No se pudo eliminar albaran")
+    }
+
+    const albaran = await DeliveryNote.find({_id: id, company: company})
+
+    if (!albaran) throw AppError.notFound("No se pudo eliminar albaran")
+
+    if (albaran.signed) throw AppError.badRequest("No se pudo eliminar albaran")
+
+    if (softDelete) {
+        await Project.softDeleteById(id,req.user.email)
+    } else {
+        await Project.hardDelete(id)
+    }
+
+    res.status(200).json({message: "Albaran eliminado"})
 }

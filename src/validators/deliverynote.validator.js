@@ -59,3 +59,20 @@ export const getDeliveryNoteSchema = z.object({
         id: z.string()
     })
 })
+
+export const downloadPDFSchema = z.object({
+    params: z.object({
+        id: z.string()
+    }).strict()
+})
+
+export const deleteDeliveryNoteSchema = z.object(
+    {
+        query: z.object({
+            soft: z.enum(['true','false']).optional()
+        }).strict(),
+        params: z.object({
+            id: z.string()
+        })
+    }
+)

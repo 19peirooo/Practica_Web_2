@@ -67,7 +67,6 @@ companySchema.index({name: 1})
 companySchema.set('toJSON', {
   versionKey: false,
   transform: (doc, ret) => {
-    delete ret._id
     delete ret.id
     return ret
   }

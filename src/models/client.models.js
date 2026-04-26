@@ -66,7 +66,6 @@ clientSchema.index({name: 1})
 clientSchema.set('toJSON', {
   versionKey: false,
   transform: (doc, ret) => {
-    delete ret._id
     delete ret.id
     return ret
   }

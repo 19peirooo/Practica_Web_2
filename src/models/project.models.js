@@ -62,7 +62,6 @@ projectSchema.index({ user: 1 });
 projectSchema.set('toJSON', {
   versionKey: false,
   transform: (doc, ret) => {
-    delete ret._id
     delete ret.id
     return ret
   }

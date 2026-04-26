@@ -76,18 +76,21 @@ const deliveryNoteSchema = new mongoose.Schema({
   },
 
   signed: {
-    type: Boolean
+    type: Boolean,
+    default: false
   },
   signedAt: {
     type: Date
   },
   signatureUrl: {
     type: String,
-    trim: true
+    trim: true,
+    default: undefined
   },
   pdfUrl: {
     type: String,
-    trim: true
+    trim: true,
+    default: undefined
   }
 
 }, {
@@ -103,7 +106,6 @@ deliveryNoteSchema.index({ project: 1 });
 deliveryNoteSchema.set('toJSON', {
   versionKey: false,
   transform: (doc, ret) => {
-    delete ret._id
     delete ret.id
     return ret
   }
