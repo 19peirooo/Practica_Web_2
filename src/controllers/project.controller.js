@@ -63,7 +63,7 @@ export async function getCompanyProjects(req, res) {
     const skip = (page - 1) * limit
 
     const user = req.user
-    const query = req.query
+    const { name, projectCode, client, active, sort } = req.query
     
     if (!user.company) {
         throw AppError.badRequest("No se puedo conseguir projectos de la compañia") 
@@ -73,31 +73,40 @@ export async function getCompanyProjects(req, res) {
         company: user.company
     }
 
-    if (query.name) {
-        filter.name = { $regex: query.name, $options: "i" }
+    if (name) {
+        filter.name = { $regex: name, $options: "i" }
     }
     
-    if (query.projectCode) {
-        filter.projectCode = {$regex: query.projectCode , $options: "i"}
+    if (projectCode) {
+        filter.projectCode = {$regex: projectCode , $options: "i"}
     }
 
-    if (query.client) {
-        filter.client = new mongoose.Types.ObjectId(query.client)
+    if (client) {
+        filter.client = new mongoose.Types.ObjectId(client)
     }
 
-    if (query.active) {
-        filter.active = query.active === 'true'
+    if (active) {
+        filter.active = active === 'true'
     }
 
     const sortFilter = {}
-    if (query.sort) {
-        sortFilter[query.sort] = 1
+    if (sort) {
+        if (sort.startsWith('-')) {
+            const campo = sort.slice(1)
+            sortFilter[campo] = -1
+        } else {
+            sortFilter[sort] = 1
+        }
+        
     }
 
     const projects = await Project.find(filter)
         .sort(sortFilter)
         .skip(skip)
         .limit(limit)
+        .populate('user', 'email name lastName')
+        .populate('company', 'name cif')
+        .populate('client', 'name cif')
 
     const totalItems = await Project.countDocuments(filter)
 
@@ -129,6 +138,9 @@ export async function getProject(req, res) {
         _id: id,
         company: user.company
     })
+    .populate('user', 'email name lastName')
+    .populate('company', 'name cif')
+    .populate('client', 'name cif')
 
     if (!project) {
         throw AppError.notFound("No se pudo buscar projecto")

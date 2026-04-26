@@ -73,7 +73,6 @@ const userSchema = new mongoose.Schema(
     },
     {
         timestamps: true,
-        toJSON: {virtuals: true},
         toObject: {virtuals: true}
     }
 )
@@ -87,6 +86,16 @@ userSchema.index({ role: 1 })
 
 userSchema.virtual('fullName').get(function() {
     return `${this.name} ${this.lastName}`
+})
+
+userSchema.set('toJSON', {
+  virtuals: true,
+  versionKey: false,
+  transform: (doc, ret) => {
+    delete ret._id
+    delete ret.id
+    return ret
+  }
 })
 
 const User = mongoose.model('User', userSchema)

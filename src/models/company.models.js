@@ -64,6 +64,15 @@ companySchema.index({owner : 1})
 companySchema.index({cif : 1}, {unique: true})
 companySchema.index({name: 1})
 
+companySchema.set('toJSON', {
+  versionKey: false,
+  transform: (doc, ret) => {
+    delete ret._id
+    delete ret.id
+    return ret
+  }
+})
+
 const Company = mongoose.model('Company', companySchema)
 
 export default Company

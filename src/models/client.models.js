@@ -63,6 +63,15 @@ clientSchema.plugin(softDeletePlugin)
 clientSchema.index({cif : 1, company: 1}, {unique: true})
 clientSchema.index({name: 1})
 
+clientSchema.set('toJSON', {
+  versionKey: false,
+  transform: (doc, ret) => {
+    delete ret._id
+    delete ret.id
+    return ret
+  }
+})
+
 const Client = mongoose.model('Client', clientSchema);
 
 export default Client;

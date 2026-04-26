@@ -86,13 +86,22 @@ export async function getUserClients(req, res) {
 
     const sortFilter = {}
     if (sort) {
-        sortFilter[sort] = 1
+        if (sort.startsWith('-')) {
+            const campo = sort.slice(1)
+            sortFilter[campo] = -1
+        } else {
+            sortFilter[sort] = 1
+        }
+        
     }
 
     const clients = await Client.find(filter)
         .sort(sortFilter)
         .skip(skip)
         .limit(limit)
+        .populate('user', 'email name lastName')
+        .populate('company', 'name cif')
+
 
     const totalItems = await Client.countDocuments(filter)
 
@@ -124,6 +133,8 @@ export async function getClient(req, res) {
         _id: id,
         company: user.company
     })
+    .populate('user', 'email name lastName')
+    .populate('company', 'name cif')
 
     if (!client) {
         throw AppError.notFound("No se pudo buscar cliente")

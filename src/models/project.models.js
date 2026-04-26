@@ -59,6 +59,15 @@ projectSchema.index({ company: 1, projectCode: 1 }, { unique: true });
 projectSchema.index({ client: 1 });
 projectSchema.index({ user: 1 });
 
+projectSchema.set('toJSON', {
+  versionKey: false,
+  transform: (doc, ret) => {
+    delete ret._id
+    delete ret.id
+    return ret
+  }
+})
+
 const Project = mongoose.model('Project', projectSchema)
 
 export default Project;

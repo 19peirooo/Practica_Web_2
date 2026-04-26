@@ -1,9 +1,5 @@
 import mongoose from "mongoose";
-
-const workerSchema = new mongoose.Schema({
-  name: { type: String, trim: true },
-  hours: { type: Number, min: 0 }
-}, { _id: false });
+import { softDeletePlugin } from "../plugins/softDelete.plugin.js";
 
 const deliveryNoteSchema = new mongoose.Schema({
   user: {
@@ -39,8 +35,6 @@ const deliveryNoteSchema = new mongoose.Schema({
     type: Date,
     required: true
   },
-
-  // MATERIAL
   material: {
     type: String,
     trim: true,
@@ -71,11 +65,18 @@ const deliveryNoteSchema = new mongoose.Schema({
       return this.format === 'hours' && (!this.workers || this.workers.length === 0);
     }
   },
-  workers: [workerSchema],
+  workers: {
+    type: [
+      {
+        name: { type: String, trim: true },
+        hours: { type: Number, min: 0 }
+      }, 
+    ],
+    default: undefined
+  },
 
   signed: {
-    type: Boolean,
-    default: false
+    type: Boolean
   },
   signedAt: {
     type: Date
@@ -93,9 +94,20 @@ const deliveryNoteSchema = new mongoose.Schema({
   timestamps: true
 });
 
+deliveryNoteSchema.plugin(softDeletePlugin)
+
 deliveryNoteSchema.index({ company: 1, workDate: -1 });
 deliveryNoteSchema.index({ client: 1 });
 deliveryNoteSchema.index({ project: 1 });
+
+deliveryNoteSchema.set('toJSON', {
+  versionKey: false,
+  transform: (doc, ret) => {
+    delete ret._id
+    delete ret.id
+    return ret
+  }
+})
 
 const DeliveryNote = mongoose.model('DeliveryNote', deliveryNoteSchema)
 
