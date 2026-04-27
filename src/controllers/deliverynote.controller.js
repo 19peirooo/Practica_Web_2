@@ -6,7 +6,7 @@ import Project from "../models/project.models.js"
 import DeliveryNote from "../models/deliverynote.models.js"
 import Company from "../models/company.models.js"
 import mongoose from "mongoose"
-import { generatePdf } from "../utils/handlePDF.js"
+import { generatePdf, generateSignedPdf } from "../utils/handlePDF.js"
 
 export async function createDeliveryNote(req,res) {
     
@@ -91,7 +91,19 @@ export async function getDeliveryNotes(req, res) {
 
     if (totalHours) filter.hours = totalHours
 
-    //TODO meter filtros de trabajadores por nombre y horas
+    if (worker || hours) {
+        filter.workers = {
+            $elemMatch: {}
+        }
+
+        if (worker) {
+            filter.workers.$elemMatch.name = { $regex: worker, $options: "i" }
+        }
+
+        if (hours) {
+            filter.workers.$elemMatch.hours = hours
+        }
+    }
 
     if (signed) filter.signed = signed
 
@@ -200,36 +212,43 @@ export async function returnPdf(req, res) {
     res.setHeader('Content-Type','application/pdf')
     res.setHeader('Content-Disposition',`attachment; filename="deliverynote_${id}.pdf"`)
 
-    const pdfResult = await cloudinaryService.uploadBuffer(pdfBuffer, {
-        folder: 'pdfs', resource_type: 'raw', format: 'pdf', access_mode: 'public'
-    })
-
-    res.status(200).json('PDF Descargado')
+    res.status(200).send(pdfBuffer)
 }
 
 export async function signPdf(req,res) {
+
+    const user = req.user
+    const company = user.company
+    const { id } = req.params
+
+    if (!company || !id) throw AppError.badRequest("No se pudo descargar pdf")
+
+    const albaran = await DeliveryNote.findById(id)
+    .populate('user', 'email name lastName')
+    .populate('company', 'name cif')
+    .populate('client', 'name cif')
+    .populate('project', 'name projectCode')
 
     if (!req.file) {
         return AppError.badRequest("No se subio firma")
     }
 
-    var doc = new PDFDocument()
-    doc.text('Aprendiendo a usar pdfkit u cloudinary',100,450)
+    const pdfBuffer = await generateSignedPdf(albaran, req.file.buffer);
 
-    const pdfPromise = buffer(doc)
-    
-    doc.image(req.file.buffer, 300, 300, 50, 50)
-    doc.end()
-
-    const pdfBuffer = await pdfPromise;
-
-    const pdfResult = cloudinaryService.uploadBuffer(pdfBuffer, {
+    const pdfResult = await cloudinaryService.uploadBuffer(pdfBuffer, {
         folder: 'pdfs', resource_type: 'raw', format: 'pdf', access_mode: 'public'
     })
     
-    const signatureResult = cloudinaryService.uploadImage(req.file.buffer, {
+    const signatureResult = await cloudinaryService.uploadImage(req.file.buffer, {
         folder: 'signatures'
     })
+
+    albaran.pdfUrl = pdfResult.secure_url
+    albaran.signed = true
+    albaran.signatureUrl = signatureResult.secure_url
+    await albaran.save()
+
+    res.status(200).send(pdfBuffer)
 
 }
 

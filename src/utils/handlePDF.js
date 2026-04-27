@@ -113,6 +113,9 @@ export async function generateSignedPdf(data, signature) {
     doc.moveDown()
 
     doc.fontSize(16).text('Firma:', {align: 'center'})
+    doc.moveDown()
+
+    doc.image(signature,300,300)
 
     doc.end()
 
