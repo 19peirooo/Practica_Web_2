@@ -232,7 +232,7 @@ export async function signPdf(req,res) {
     if (!req.file) {
         return AppError.badRequest("No se subio firma")
     }
-
+    
     const pdfBuffer = await generateSignedPdf(albaran, req.file.buffer);
 
     const pdfResult = await cloudinaryService.uploadBuffer(pdfBuffer, {
@@ -245,8 +245,12 @@ export async function signPdf(req,res) {
 
     albaran.pdfUrl = pdfResult.secure_url
     albaran.signed = true
+    albaran.signedAt = Date.now()
     albaran.signatureUrl = signatureResult.secure_url
     await albaran.save()
+
+    res.setHeader('Content-Type','application/pdf')
+    res.setHeader('Content-Disposition',`attachment; filename="deliverynote_signed_${id}.pdf"`)
 
     res.status(200).send(pdfBuffer)
 

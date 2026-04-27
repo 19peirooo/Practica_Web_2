@@ -1,5 +1,6 @@
 import { buffer } from "stream/consumers"
 import PDFDocument from "pdfkit"
+import cloudinaryService from "../services/cloudinary.service.js"
 
 export async function generatePdf(data) {
 
@@ -70,6 +71,7 @@ export async function generateSignedPdf(data, signature) {
     
     var doc = new PDFDocument()
 
+    // const pdfPromise = cloudinaryService.uploadReadableStream(doc)
     const pdfPromise = buffer(doc)
     
     doc.fontSize(20).text(`Albaran ${data._id}}`, {align: 'center'})
@@ -114,8 +116,7 @@ export async function generateSignedPdf(data, signature) {
 
     doc.fontSize(16).text('Firma:', {align: 'center'})
     doc.moveDown()
-
-    doc.image(signature,300,300)
+    doc.image(signature,200,400, {scale: 0.25})
 
     doc.end()
 
