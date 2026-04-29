@@ -1,12 +1,6 @@
 import { email, z } from "zod"
+import { addressSchema, idSchema } from "./utils.validator.js"
 
-const addressSchema = z.object({
-    street: z.string().trim(),
-    number: z.number().int().positive(),
-    postal: z.string().trim(),
-    city: z.string().trim(),
-    province: z.string().trim()
-})
 
 export const clientCreateSchema = z.object(
     {
@@ -23,7 +17,7 @@ export const clientCreateSchema = z.object(
 export const clientUpdateSchema = z.object(
     {
         params: z.object({
-            id: z.string()
+            id: idSchema
         }),
         body: z.object({
             name: z.string().trim().optional(),
@@ -50,7 +44,7 @@ export const getClientsSchema = z.object(
 
 export const getClientSchema = z.object({
     params: z.object({
-        id: z.string()
+        id: idSchema
     }).strict()
 })
 
@@ -60,7 +54,7 @@ export const deleteClientSchema = z.object(
             soft: z.enum(['true','false']).optional()
         }).strict(),
         params: z.object({
-            id: z.string()
+            id: idSchema
         })
     }
 )
@@ -68,7 +62,7 @@ export const deleteClientSchema = z.object(
 export const restoreClientSchema = z.object(
     {
         params: z.object({
-            id: z.string()
+            id: idSchema
         })
     }
 )

@@ -1,19 +1,12 @@
 import { z } from "zod"
-
-const addressSchema = z.object({
-    street: z.string().trim(),
-    number: z.number().int().positive(),
-    postal: z.string().trim(),
-    city: z.string().trim(),
-    province: z.string().trim()
-})
+import { addressSchema } from "./utils.validator.js"
 
 export const userRegisterSchema = z.object(
     {
         body: z.object({
             email: z.email("Email Invalido").transform((e) => e.toLowerCase().trim()),
             password: z.string().min(8)
-        })
+        }).strict()
 
     }
 )
@@ -22,7 +15,7 @@ export const userValidateSchema = z.object(
     {
         body: z.object({
             verificationCode: z.string().trim().length(6)
-        })
+        }).strict()
     }
 )
 
@@ -31,7 +24,7 @@ export const userLoginSchema = z.object(
         body: z.object({
             email: z.email("Email Invalido").transform((e) => e.toLowerCase().trim()),
             password: z.string().trim().min(8)
-        })
+        }).strict()
         
     }
 )
@@ -46,7 +39,7 @@ export const userOnboardingSchema = z.object(
                 /^[XYZ][0-9]{7}[A-Z]$/.test(nif_val)
             }),
             address: addressSchema
-        })
+        }).strict()
     }
 )
 
@@ -60,3 +53,9 @@ export const userChangePwdSchema = z.object(
         }, {message: "La contraseñas no pueden ser iguales"})
     }
 )
+
+export const userDeleteSchema = z.object({
+    query: z.object({
+        soft: z.enum(['true','false']).optional(),
+    }).strict()
+})
