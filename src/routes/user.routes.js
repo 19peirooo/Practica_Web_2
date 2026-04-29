@@ -19,6 +19,10 @@ router.post('/login', validate(userLoginSchema), loginUser)
 router.put('/register', authMiddleware, validate(userOnboardingSchema), loadUserData)
 router.patch('/company', authMiddleware, validate(companyOnboardingSchema), loadCompanyData)
 
+router.patch('/logo', authMiddleware, checkRol(['admin']),uploadLogo)
+
+router.get('/', authMiddleware, getUser)
+
 router.post('/refresh', refreshAccessToken)
 router.post('/logout', authMiddleware, logout)
 
