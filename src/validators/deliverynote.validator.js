@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { idSchema } from "./utils.validator"
+import { idSchema } from "./utils.validator.js"
 
 export const createDeliverNoteSchema = z.object(
     {
