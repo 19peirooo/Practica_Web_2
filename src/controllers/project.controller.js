@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import Client from "../models/client.models.js"
 import Project from "../models/project.models.js"
 import { AppError } from "../utils/AppError.js";
+//import { io } from "../index.js";
 
 export async function createProject(req,res) {
     
@@ -26,8 +27,9 @@ export async function createProject(req,res) {
     req.body.user = user
     req.body.company = company
 
-    await Project.create(req.body)
+    const project = await Project.create(req.body)
 
+    //io.to(company).emit("project:new", project)
     res.status(201).json({message: "Proyecto Creado"})
 
 }

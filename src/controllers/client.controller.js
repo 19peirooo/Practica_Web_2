@@ -1,3 +1,4 @@
+//import { io } from "../index.js";
 import Client from "../models/client.models.js";
 import Company from "../models/company.models.js"
 import { AppError } from "../utils/AppError.js";
@@ -20,8 +21,9 @@ export async function createClient(req,res) {
     req.body.user = user
     req.body.company = company
 
-    await Client.create(req.body)
+    const client = await Client.create(req.body)
 
+    //io.to(company).emit("client:new", client)
     res.status(201).json({message: "Cliente Creado"})
 
 }

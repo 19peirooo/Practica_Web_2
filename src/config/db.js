@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 
 const dbConnect = async () => {
 
-  if (process.env.NODE_ENV !== 'test') return
+  if (process.env.NODE_ENV === 'test') return
 
   const DB_URI = process.env.DATABASE_URL;
   
