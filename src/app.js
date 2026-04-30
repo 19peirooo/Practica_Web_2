@@ -45,7 +45,7 @@ if (isProduction) {
 
 morganBody(app, {
   noColors: true,
-  skip: (req, res) => res.statusCode < 400, // Solo errores
+  skip: (req, res) => res.statusCode < 500, 
   stream: loggerStream
 });
 
