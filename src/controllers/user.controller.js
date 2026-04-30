@@ -8,6 +8,7 @@ import { generateVerificationCode } from "../utils/handleVerificationCode.js";
 import { AppError } from "../utils/AppError.js";
 import { sendSlackNotification } from "../utils/handleLogger.js";
 import cloudinaryService from '../services/cloudinary.service.js';
+import { sendVerificationEmail } from "../services/mail.service.js";
 
 export async function registerUser(req, res) {
     
@@ -21,7 +22,9 @@ export async function registerUser(req, res) {
     const hashed_pswd = await encrypt(new_user.password)
     new_user.password = hashed_pswd
 
-    new_user.verificationCode = generateVerificationCode()
+    const code = generateVerificationCode()
+
+    new_user.verificationCode = code
     new_user.verificationAttempts = 3
 
     const user = await User.create(new_user)
@@ -39,6 +42,8 @@ export async function registerUser(req, res) {
     ee.emit('user:registered', user.email)
 
     await sendSlackNotification("✅ Registro Completado")
+
+    await sendVerificationEmail(user.email,code)
 
     res.status(201).json({
         email: user.email,
