@@ -23,3 +23,15 @@ export const clearDB = async () => {
     await collections[key].deleteMany();
   }
 };
+
+beforeAll(async () => {
+  await connectDB();
+});
+
+afterEach(async () => {
+  await clearDB();
+});
+
+afterAll(async () => {
+  await closeDB();
+});

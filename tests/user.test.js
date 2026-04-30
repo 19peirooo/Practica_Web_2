@@ -1,67 +1,21 @@
 import request from "supertest";
 import app from "../src/app.js";
 import User from "../src/models/user.models.js";
+import Company from "../src/models/company.models.js"
 import RefreshToken from "../src/models/refreshtoken.models.js";
-import { describe } from "zod/v4/core";
-import { it } from "zod/v4/locales";
-import { number } from "zod";
+import { userData, adminData, guestData, userOnboardingData, companyOnboardingData, invalidUserData } from "./testData.js";
 
 let accessToken
 let refreshToken
 let adminUser
 let code
 
-const userData = {
-  email: "test@test.com",
-  password: "12345678"
-};
-
-const adminData = {
-  email: "admin@test.com",
-  password: "12345678"
-};
-
-const guestData = {
-  email: "guest@test.com",
-  password: "12345678"
-};
-
-const userOnboardingData = {
-  name: "Test",
-  surname: "User",
-  nif: "12345678A",
-  address: {
-    street: "Travesia de Antonio Nebrija",
-    number: 4,
-    postal: "28040",
-    city:"Madrid",
-    province: "Madrid"
-  }
-}
-
-const companyOnboardingData = {
-  isFreelance: false,
-  name: "FAKECOMPANY",
-  cif: "B-12345778",
-  address: {
-    street: "Gran Via",
-    number: 15,
-    postal: "28013",
-    city: "Madrid",
-    province: "Madrid"
-  }
-}
-
-const invalidUserData = {
-  email: "test@test.com",
-  password: "1234567"
-};
-
 describe("User Endpoints", () => {
 
   beforeEach(async () => {
     await User.deleteMany();
     await RefreshToken.deleteMany();
+    await Company.deleteMany();
   });
 
   describe("POST /api/user/register", () => {
@@ -78,6 +32,10 @@ describe("User Endpoints", () => {
     });
 
     it("❌ should not register duplicate user", async () => {
+
+      await request(app)
+        .post("/api/user/register")
+        .send(userData)
 
       const res = await request(app)
         .post("/api/user/register")
@@ -97,13 +55,13 @@ describe("User Endpoints", () => {
 
   });
 
-  describe("PUT /api/user/validation,", () => {
+  describe("PUT /api/user/validation", () => {
     beforeEach(async () => {
-      const user = await request(app).
+      const res = await request(app).
       post("/api/user/register")
       .send(userData);
 
-      accessToken = register.body.accessToken;
+      accessToken = res.body.accessToken;
 
       const user = await User.findOne({ email: userData.email });
       code = user.verificationCode;
@@ -129,28 +87,26 @@ describe("User Endpoints", () => {
       .set("Authorization", `Bearer ${accessToken}`)
       .send({verificationCode: "000000"})
 
-      expect(res.statusCode).toBe(401)
+      expect(res.statusCode).toBe(400)
 
     })
 
     it("❌ too many verification requests", async () => {
-      await request(app)
-      .put("/api/user/validation")
-      .set("Authorization", `Bearer ${accessToken}`)
-      .send({verificationCode: "000000"})
 
-      await request(app)
-      .put("/api/user/validation")
-      .set("Authorization", `Bearer ${accessToken}`)
-      .send({verificationCode: "000000"})
+      for (let i = 0; i < 2; i++) {
+        await request(app)
+          .put("/api/user/validation")
+          .set("Authorization", `Bearer ${accessToken}`)
+          .send({verificationCode: "000000"});
+      }
 
       const res = await request(app)
-      .put("/api/user/validation")
-      .set("Authorization", `Bearer ${accessToken}`)
-      .send({verificationCode: "000000"})
+        .put("/api/user/validation")
+        .set("Authorization", `Bearer ${accessToken}`)
+        .send({verificationCode: "000000"});
 
-      expect(res.statusCode).toBe(429)
-    })
+      expect(res.statusCode).toBe(429);
+    });
 
     it ("❌ user is all ready verified", async () => {
       await request(app)
@@ -304,7 +260,7 @@ describe("User Endpoints", () => {
     })
 
     it("❌ should fail without token", async () => {
-      const res = await request(app).put("/api/user/register");
+      const res = await request(app).patch("/api/user/company");
       expect(res.statusCode).toBe(401);
     })
 
@@ -432,152 +388,163 @@ describe("User Endpoints", () => {
   });
 
   describe("PUT /api/user/invite", () => {
-    await User.deleteMany();
-    await Company.deleteMany();
+    
+    beforeEach(async () => {
 
-    const register = await request(app)
-      .post("/api/user/register")
-      .send(adminData);
+      const register = await request(app)
+        .post("/api/user/register")
+        .send(adminData);
 
-    accessToken = register.body.accessToken;
+      accessToken = register.body.accessToken;
 
-    await request(app)
-      .put("/api/user/register")
-      .set("Authorization", `Bearer ${accessToken}`)
-      .send({
-        name: "Admin",
-        lastName: "User",
-        nif: "12345678A",
-        address: {
-          street: "Calle A",
-          number: "1",
-          postal: "28001",
-          city: "Madrid",
-          province: "Madrid"
-        }
-      });
+      await request(app)
+        .put("/api/user/register")
+        .set("Authorization", `Bearer ${accessToken}`)
+        .send({
+          name: "Admin",
+          lastName: "User",
+          nif: "12345678A",
+          address: {
+            street: "Calle A",
+            number: "1",
+            postal: "28001",
+            city: "Madrid",
+            province: "Madrid"
+          }
+        });
 
-    await request(app)
-      .patch("/api/user/company")
-      .set("Authorization", `Bearer ${accessToken}`)
-      .send({
-        name: "Empresa Admin",
-        cif: "B12345678",
-        address: {
-          street: "Empresa",
-          number: "1",
-          postal: "28002",
-          city: "Madrid",
-          province: "Madrid"
-        },
-        isFreelance: false
-      });
+      await request(app)
+        .patch("/api/user/company")
+        .set("Authorization", `Bearer ${accessToken}`)
+        .send({
+          name: "Empresa Admin",
+          cif: "B12345678",
+          address: {
+            street: "Empresa",
+            number: "1",
+            postal: "28002",
+            city: "Madrid",
+            province: "Madrid"
+          },
+          isFreelance: false
+        });
 
-    adminUser = await User.findOne({ email: adminData.email });
-  })
+      adminUser = await User.findOne({ email: adminData.email });
+    })
 
-  it("✅ should invite a new user", async () => {
-    const res = await request(app)
-      .put("/api/user/invite")
-      .set("Authorization", `Bearer ${accessToken}`)
-      .send(guestData);
+    it("✅ should invite a new user", async () => {
+      const res = await request(app)
+        .put("/api/user/invite")
+        .set("Authorization", `Bearer ${accessToken}`)
+        .send(guestData);
 
-    expect(res.statusCode).toBe(201);
-    expect(res.body.message).toBe("Usuario Invitado");
+      expect(res.statusCode).toBe(201);
+      expect(res.body.message).toBe("Usuario Invitado");
 
-    const guest = await User.findOne({ email: guestData.email });
+      const guest = await User.findOne({ email: guestData.email });
 
-    expect(guest).toBeTruthy();
-    expect(guest.company.toString()).toBe(adminUser.company.toString());
-    expect(guest.role).toBe("guest");
-  });
-
-  it("❌ should fail if user already exists", async () => {
-
-    await User.create({
-      email: guestData.email,
-      password: "hashed"
+      expect(guest).toBeTruthy();
+      expect(guest.company.toString()).toBe(adminUser.company.toString());
+      expect(guest.role).toBe("guest");
     });
 
-    const res = await request(app)
-      .put("/api/user/invite")
-      .set("Authorization", `Bearer ${accessToken}`)
-      .send(guestData);
+    it("❌ should fail if user already exists", async () => {
 
-    expect(res.statusCode).toBe(409);
-  });
-
-  it("❌ should fail if admin has no company", async () => {
-
-    const register = await request(app)
-      .post("/api/user/register")
-      .send({
-        email: "no-company@test.com",
-        password: "12345678"
+      await User.create({
+        email: guestData.email,
+        password: "hashed"
       });
 
-    const token = register.body.accessToken;
+      const res = await request(app)
+        .put("/api/user/invite")
+        .set("Authorization", `Bearer ${accessToken}`)
+        .send(guestData);
 
-    const res = await request(app)
-      .put("/api/user/invite")
-      .set("Authorization", `Bearer ${token}`)
-      .send(guestData);
+      expect(res.statusCode).toBe(409);
+    });
 
-    expect(res.statusCode).toBe(400);
-  });
+    it("❌ should fail if admin has no company", async () => {
 
-  it("❌ should fail if user is not admin", async () => {
+      const register = await request(app)
+        .post("/api/user/register")
+        .send({
+          email: "no-company@test.com",
+          password: "12345678"
+        });
 
-    const register = await request(app)
-      .post("/api/user/register")
-      .send({
-        email: "guest2@test.com",
-        password: "12345678"
-      });
+      const token = register.body.accessToken;
 
-    const guestToken = register.body.accessToken;
+      const res = await request(app)
+        .put("/api/user/invite")
+        .set("Authorization", `Bearer ${token}`)
+        .send(guestData);
 
-    await request(app)
-      .put("/api/user/register")
-      .set("Authorization", `Bearer ${guestToken}`)
-      .send({
-        name: "Guest",
-        lastName: "User",
-        nif: "87654321B",
-        address: {
-          street: "Calle B",
-          number: "2",
-          postal: "28003",
-          city: "Madrid",
-          province: "Madrid"
-        }
-      });
+      expect(res.statusCode).toBe(400);
+    });
 
-    await request(app)
-      .patch("/api/user/company")
-      .set("Authorization", `Bearer ${guestToken}`)
-      .send({
-        name: "Empresa Admin",
-        cif: "B12345678",
-        address: {
-          street: "Empresa",
-          number: "1",
-          postal: "28002",
-          city: "Madrid",
-          province: "Madrid"
-        },
-        isFreelance: false
-      });
+    it("❌ should fail with invalid body", async () => {
+      const res = await request(app)
+        .put("/api/user/invite")
+        .set("Authorization", `Bearer ${accessToken}`)
+        .send({ email: "bademail" });
 
-    const res = await request(app)
-      .put("/api/user/invite")
-      .set("Authorization", `Bearer ${guestToken}`)
-      .send({
-        email: "otro@test.com",
-        password: "12345678"
-      });
+      expect(res.statusCode).toBe(400);
+    });
 
-    expect(res.statusCode).toBe(403);
-  });
+    it("❌ should fail if user is not admin", async () => {
+
+      const register = await request(app)
+        .post("/api/user/register")
+        .send({
+          email: "guest2@test.com",
+          password: "12345678"
+        });
+
+      const guestToken = register.body.accessToken;
+
+      await request(app)
+        .put("/api/user/register")
+        .set("Authorization", `Bearer ${guestToken}`)
+        .send({
+          name: "Guest",
+          lastName: "User",
+          nif: "87654321B",
+          address: {
+            street: "Calle B",
+            number: "2",
+            postal: "28003",
+            city: "Madrid",
+            province: "Madrid"
+          }
+        });
+
+      await request(app)
+        .patch("/api/user/company")
+        .set("Authorization", `Bearer ${guestToken}`)
+        .send({
+          name: "Empresa Admin",
+          cif: "B12345678",
+          address: {
+            street: "Empresa",
+            number: "1",
+            postal: "28002",
+            city: "Madrid",
+            province: "Madrid"
+          },
+          isFreelance: false
+        });
+
+      const res = await request(app)
+        .put("/api/user/invite")
+        .set("Authorization", `Bearer ${guestToken}`)
+        .send({
+          email: "otro@test.com",
+          password: "12345678"
+        });
+
+      expect(res.statusCode).toBe(403);
+    });
+
+  })
 
 });

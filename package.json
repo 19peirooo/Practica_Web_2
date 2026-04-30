@@ -7,7 +7,7 @@
     "dev": "node --watch --env-file=.env src/app.js",
     "start": "node src/app.js",
     "build": "echo 'No build step required'",
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --forceExit --detectOpenHandles",
+    "test": "NODE_ENV=test node --experimental-vm-modules node_modules/jest/bin/jest.js --forceExit --detectOpenHandles",
     "test:watch": "npm test -- --watch",
     "test:coverage": "npm test -- --coverage",
     "lint": "eslint ."

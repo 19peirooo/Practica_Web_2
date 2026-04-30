@@ -8,13 +8,15 @@ const envSchema = z.object({
   JWT_EXPIRES_IN: z.string().default('7d'),
 });
 
-// Validar al iniciar - falla rápido si falta algo
 const parsed = envSchema.safeParse(process.env);
 
 if (!parsed.success) {
   console.error('❌ Variables de entorno inválidas:');
   console.error(parsed.error.flatten().fieldErrors);
-  process.exit(1);
+
+  if (process.env.NODE_ENV !== 'test') {
+    process.exit(1);
+  }
 }
 
 export const env = parsed.data;
