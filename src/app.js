@@ -5,6 +5,7 @@ import helmet from 'helmet'
 import { sanitizeBody, limitStringLength } from './middleware/sanitize.middleware.js';
 import rateLimit from 'express-rate-limit'
 import { errorHandler, notFound } from './middleware/error.middleware.js'
+import mongoose from 'mongoose';
 import morganBody from 'morgan-body'
 import morgan from 'morgan'
 import { loggerStream } from './utils/handleLogger.js'
@@ -55,6 +56,18 @@ app.use('/uploads', express.static('uploads'));
 // Rutas de la API
 app.use('/api', routes);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
+app.get('/health', (req, res) => {
+  const isDbConnected = mongoose.connection.readyState === 1;
+
+  const health = {
+    status: 'ok',
+    db: isDbConnected ? "connected" : "disconnected",
+    uptime: process.uptime(),
+    timestamp: new Date()
+  };
+
+  res.status(isDbConnected ? 200 : 503).json(health);
+});
 
 // Manejo de errores
 app.use(notFound);
