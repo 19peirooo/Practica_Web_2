@@ -4,7 +4,7 @@ import app from "../src/app.js";
 import Client from "../src/models/client.models.js";
 import User from "../src/models/user.models.js";
 import Company from "../src/models/company.models.js";
-import { it } from "node:test";
+import { beforeEach, it } from "node:test";
 import { userData, guestData, userOnboardingData, companyOnboardingData, clientData, clientData2 } from "./testData.js";
 
 let token;
@@ -321,6 +321,87 @@ describe("Client Endpoints", () => {
       expect(res.statusCode).toBe(403)
 
     });
-});
+  });
+
+  describe("GET /api/client/archived", () => {
+
+    beforeEach(async () => {
+      const client = await Client.create(clientData);
+
+      await Client.softDeleteById(client._id);
+    })
+
+    it("✅ should get archived clients", async () => {
+      
+      const res = await request(app)
+        .get("/api/client/archived")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.clients.length).toBeGreaterThan(0);
+    });
+
+    it("❌ should fail without token", async () => {
+      const res = await request(app).get("/api/client/archived");
+      expect(res.statusCode).toBe(401)
+    });
+  });
+
+  describe("PATCH /api/client/:id/restore", () => {
+    beforeEach(async () => {
+      const client = await Client.create(clientData);
+
+      await Client.softDeleteById(client._id);
+      clientId = client._id;
+    });
+
+    it("✅ should restore client", async () => {
+      const res = await request(app)
+        .patch(`/api/client/${clientId}/restore`)
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.message).toBe("Cliente Recuperado");
+    });
+
+    it("❌ should fail if not found", async () => {
+      const res = await request(app)
+        .patch(`/api/client/${new mongoose.Types.ObjectId()}/restore`)
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(res.statusCode).toBe(404);
+    });
+
+    it("❌ should fail without token", async () => {
+      const res = await request(app).patch(`/api/client/${idClient}/restore`);
+      expect(res.statusCode).toBe(401)
+    });
+
+    it ("❌ should fail if guest", async () => {
+      const guest = request(app)
+      .put('/api/user/invite')
+      .set("Authorization", `Bearer ${token}`)
+      .send(guestData)
+
+      const login = await request(app).post('/api/user/login').send(guestData)
+      token = login.body.accessToken
+      
+      const res = await request(app)
+        .patch(`/api/client/${clientId}/restore`)
+        .set("Authorization", `Bearer ${token}`)
+
+      expect(res.statusCode).toBe(403)
+
+    });
+
+    it("❌ should fail in invalid id", async () => {
+      const res = await request(app)
+        .patch(`/api/client/FA?KE_ID/restore`)
+        .set("Authorization", `Bearer ${token}`)
+
+      expect(res.statusCode).toBe(400);
+    })
+
+  });
 
 })
