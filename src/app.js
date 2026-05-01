@@ -56,17 +56,25 @@ app.use('/uploads', express.static('uploads'));
 // Rutas de la API
 app.use('/api', routes);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
-app.get('/health', (req, res) => {
-  const isDbConnected = mongoose.connection.readyState === 1;
 
-  const health = {
+app.get('/health', async (req, res) => {
+  const healthcheck = {
     status: 'ok',
-    db: isDbConnected ? "connected" : "disconnected",
+    timestamp: new Date().toISOString(),
     uptime: process.uptime(),
-    timestamp: new Date()
+    environment: process.env.NODE_ENV
   };
 
-  res.status(isDbConnected ? 200 : 503).json(health);
+  try {
+    await mongoose.connection.db.admin().ping();
+    healthcheck.db = 'connected';
+  } catch (error) {
+    healthcheck.status = 'error';
+    healthcheck.db = 'disconnected';
+    return res.status(503).json(healthcheck);
+  }
+
+  res.json(healthcheck);
 });
 
 // Manejo de errores
