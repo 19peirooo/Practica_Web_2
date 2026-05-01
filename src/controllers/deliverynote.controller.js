@@ -7,12 +7,12 @@ import DeliveryNote from "../models/deliverynote.models.js"
 import Company from "../models/company.models.js"
 import mongoose from "mongoose"
 import { generatePdf, generateSignedPdf } from "../utils/handlePDF.js"
-//import { io } from "../index.js"
 
 export async function createDeliveryNote(req,res) {
     
     const company = req.user.company
     const projectId = req.body.project
+    const io = req.app.get('io')
 
     if (!company || !projectId) throw AppError.badRequest("No se pudo crear albaran")
     
@@ -39,7 +39,7 @@ export async function createDeliveryNote(req,res) {
     
     const albaran = await DeliveryNote.create(req.body)
 
-    //io.to(company).emit("deliverynote:new", albaran)
+    io.to(company).emit("deliverynote:new", albaran)
     res.status(201).json({message:"Albaran Creado"})
 
 }
@@ -231,6 +231,7 @@ export async function signPdf(req,res) {
     const user = req.user
     const company = user.company
     const { id } = req.params
+    const io = req.app.get('io')
 
     if (!company || !id) throw AppError.badRequest("No se pudo descargar pdf")
 
@@ -263,7 +264,7 @@ export async function signPdf(req,res) {
     res.setHeader('Content-Type','application/pdf')
     res.setHeader('Content-Disposition',`attachment; filename="deliverynote_signed_${id}.pdf"`)
 
-    //io.to(company).emit("deliverynote:signed", albaran)
+    io.to(company).emit("deliverynote:signed", albaran)
     res.status(200).send(pdfBuffer)
 
 }

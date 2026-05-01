@@ -1,21 +1,20 @@
 import app from "./app.js";
 import dbConnect from './config/db.js'
 import { env } from './config/env.js'
-import { Server } from "socket.io";
 import { createServer } from 'node:http';
 import mongoose from "mongoose";
+import setupSocket from "./sockets/index.js";
 
-// const server = createServer(app)
-// 
-// export const io = new Server(server, {
-//   cors: { origin: "*" },
-// });
+const httpServer = createServer(app);
+const io = setupSocket(httpServer)
+
+app.set('io', io);
 
 const PORT = process.env.PORT || 3000;
 
 const startServer = async () => {
   await dbConnect();
-  const server = app.listen(PORT, () => {
+  const server = httpServer.listen(PORT, () => {
     console.log(`🚀 Servidor en http://localhost:${env.PORT} [${env.NODE_ENV}]`);
   });
 

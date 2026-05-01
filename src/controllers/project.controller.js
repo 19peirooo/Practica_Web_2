@@ -2,13 +2,13 @@ import mongoose from "mongoose";
 import Client from "../models/client.models.js"
 import Project from "../models/project.models.js"
 import { AppError } from "../utils/AppError.js";
-//import { io } from "../index.js";
 
 export async function createProject(req,res) {
     
     const user = req.user
     const company = req.user.company
     const client = req.body.client
+    const io = req.app.get('io')
 
     if (!company || !client) {
         throw AppError.badRequest("No se pudo crear proyecto")
@@ -29,7 +29,7 @@ export async function createProject(req,res) {
 
     const project = await Project.create(req.body)
 
-    //io.to(company).emit("project:new", project)
+    io.to(company).emit("project:new", project)
     res.status(201).json({message: "Proyecto Creado"})
 
 }

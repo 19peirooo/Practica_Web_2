@@ -1,7 +1,6 @@
 import jwt from 'jsonwebtoken';
 
 export const authMiddleware = (socket, next) => {
-  // Obtener token del handshake
   const token = socket.handshake.auth.token
     || socket.handshake.headers.authorization?.split(' ')[1];
 

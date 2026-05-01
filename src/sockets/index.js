@@ -1,6 +1,15 @@
+import clientHandler from "./handlers/client.handler.js";
+import deliveryNoteHandler from "./handlers/deliverynote.handler.js";
+import projectHandler from "./handlers/project.handler.js";
 import {authMiddleware} from "./middleware/auth.middleware.js"
+import { Server } from "socket.io";
 
-export default function initSockets(io) {
+export default function setupSocket(httpServer) {
+
+  const io = new Server(httpServer, {
+    cors: { origin: '*' }
+  });
+
   io.use(authMiddleware);
 
   io.on("connection", (socket) => {
@@ -10,24 +19,15 @@ export default function initSockets(io) {
 
     console.log(`[SOCKET] Usuario ${socket.user.id} conectado a sala ${companyId}`);
 
+    clientHandler(socket)
+    projectHandler(socket)
+    deliveryNoteHandler(socket)
+
     socket.on("disconnect", () => {
       console.log(`Usuario ${socket.user.id} desconectado`);
     });
-
-    socket.on("client:new", (data) => {
-      console.log("Nuevo Cliente:", data.name);
-    });
-
-    socket.on("project:new", (data) => {
-      console.log("Nuevo Proyecto:", data.name);
-    });
-
-    socket.on("deliverynote:new", (data) => {
-      console.log("Nuevo Albarán:", data.description);
-    });
-
-    socket.on("deliverynote:signed", (data) => {
-      console.log("Albarán firmado:", data.description);
-    });
+    
   });
+
+  return io
 }

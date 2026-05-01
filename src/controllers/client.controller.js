@@ -1,4 +1,3 @@
-//import { io } from "../index.js";
 import Client from "../models/client.models.js";
 import Company from "../models/company.models.js"
 import { AppError } from "../utils/AppError.js";
@@ -7,6 +6,7 @@ export async function createClient(req,res) {
 
     const user = req.user
     const company = req.user.company
+    const io = req.app.get('io')
 
     if (!user.company) {
         throw AppError.badRequest("No se pudo crear cliente")
@@ -23,7 +23,7 @@ export async function createClient(req,res) {
 
     const client = await Client.create(req.body)
 
-    //io.to(company).emit("client:new", client)
+    io.to(company.toString()).emit("client:new", client)
     res.status(201).json({message: "Cliente Creado"})
 
 }
