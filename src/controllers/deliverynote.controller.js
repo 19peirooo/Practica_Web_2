@@ -7,6 +7,7 @@ import DeliveryNote from "../models/deliverynote.models.js"
 import Company from "../models/company.models.js"
 import mongoose from "mongoose"
 import { generatePdf, generateSignedPdf } from "../utils/handlePDF.js"
+import axios from 'axios';
 
 export async function createDeliveryNote(req,res) {
     

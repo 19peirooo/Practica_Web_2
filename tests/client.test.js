@@ -20,7 +20,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   await closeDB();
-});
+})
 
 describe("Client Endpoints", () => {
 
