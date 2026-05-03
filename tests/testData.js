@@ -69,3 +69,31 @@ export const clientData2 = {
         "province": "x"
     }
 }
+
+export const projectData = {
+    "name": "proyecto1",
+    "projectCode": "PR-1",
+    "email":"pr1@mail.com",
+    "address": {
+        "street":"Avenida Ancha de Castelar",
+        "number": 53,
+        "postal": "03690",
+        "city": "Sant Vicent del Raspeig",
+        "province": "Alicante"
+    },
+    "active": true
+}
+
+export const projectData2 = {
+    "name": "proyecto2",
+    "projectCode": "PR-2",
+    "email":"pr2@mail.com",
+    "address": {
+        "street":"Avenida Ancha de Castelar",
+        "number": 53,
+        "postal": "03690",
+        "city": "Sant Vicent del Raspeig",
+        "province": "Alicante"
+    },
+    "active": false
+}

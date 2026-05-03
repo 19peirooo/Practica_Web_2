@@ -206,7 +206,7 @@ export async function restoreProject(req, res) {
 
     const client = await Project.findDeleted({_id: id, company: company})
     
-    if (!client) throw AppError.notFound("No se pudo restaurar projecto")
+    if (!client || client.length === 0) throw AppError.notFound("No se pudo restaurar projecto")
 
     await Project.restoreById(id)
 

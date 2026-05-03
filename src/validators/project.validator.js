@@ -42,7 +42,7 @@ export const getProjectsSchema = z.object(
                 active: z.enum(['true','false']).optional(),
                 sort: z.string().optional()
             }
-        )
+        ).strict()
     }
 )
 
