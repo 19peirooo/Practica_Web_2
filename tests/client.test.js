@@ -332,6 +332,14 @@ describe("Client Endpoints", () => {
       expect(res.statusCode).toBe(400);
     })
 
+    it("❌ should fail if not found", async () => {
+      const res = await request(app)
+        .delete(`/api/client/${new mongoose.Types.ObjectId()}`)
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(res.statusCode).toBe(404);
+    });
+
     it("❌ should fail without token", async () => {
       const res = await request(app).delete(`/api/client/${clientId}`);
       expect(res.statusCode).toBe(401)

@@ -349,12 +349,28 @@ describe("Project Endpoints", () => {
       expect(res.statusCode).toBe(200);
     });
 
+    it("❌ should fail if invalid query", async () => {
+      const res = await request(app)
+        .delete(`/api/project/${projectId}?paca=vaca`)
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(res.statusCode).toBe(400);
+    });
+
     it("❌ should fail invalid id", async () => {
       const res = await request(app)
         .delete(`/api/project/FA:KE_ID`)
         .set("Authorization", `Bearer ${token}`);
 
       expect(res.statusCode).toBe(400);
+    });
+
+    it("❌ should fail if not found", async () => {
+      const res = await request(app)
+        .delete(`/api/project/${new mongoose.Types.ObjectId()}`)
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(res.statusCode).toBe(404);
     });
 
     it("❌ should fail without token", async () => {

@@ -97,3 +97,47 @@ export const projectData2 = {
     },
     "active": false
 }
+
+export const deliveryNoteData = {
+    "format": "material",
+    "description": "Albaran de Materiales 1",
+    "workDate": "2025-03-29",
+    "material": "Cobre",
+    "quantity": 10,
+    "unit": "kg"
+}
+
+export const deliveryNoteData2 = {
+    "format": "hours",
+    "description": "Albaran de Horas 1",
+    "workDate": "2026-04-26",
+    "hours": 20,
+    "workers": [
+        {
+            "name": "Manolo",
+            "hours": 10
+        },
+        {
+            "name": "Pepe",
+            "hours": 10
+        }
+    ]
+}
+
+export const invalidDeliveryNoteData = {
+    "format": "hours",
+    "description": "Albaran de Horas 2",
+    "workDate": "2026-04-26",
+    "hours": 20,
+    "workers": [
+        {
+            "name": "Manolo",
+            "hours": 5
+        },
+        {
+            "name": "Pepe",
+            "hours": 10
+        }
+    ]
+}
+

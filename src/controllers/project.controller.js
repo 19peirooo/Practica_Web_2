@@ -164,7 +164,7 @@ export async function deleteProject(req, res) {
         throw AppError.badRequest("No se pudo eliminar projecto")
     }
 
-    const project = await Project.find({_id: id, company: company})
+    const project = await Project.findOne({_id: id, company: company})
 
     if (!project) {
         throw AppError.notFound("No se pudo eliminar projecto")

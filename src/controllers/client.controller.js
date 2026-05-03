@@ -157,7 +157,7 @@ export async function deleteClient(req, res) {
         throw AppError.badRequest("No se pudo eliminar cliente")
     }
 
-    const client = await Client.find({_id: id, company: company})
+    const client = await Client.findOne({_id: id, company: company})
 
     if (!client) {
         throw AppError.notFound("No se pudo eliminar cliente")

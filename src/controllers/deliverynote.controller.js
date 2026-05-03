@@ -177,9 +177,7 @@ export async function getDeliveryNote(req, res) {
     .populate('client', 'name cif')
     .populate('project', 'name projectCode')
 
-    if (!albaran) {
-        throw AppError.notFound("No se pudo buscar albaran")
-    }
+    if (!albaran) throw AppError.notFound("No se pudo buscar albaran")
     
     res.status(200).json(albaran)
 }
@@ -197,6 +195,8 @@ export async function returnPdf(req, res) {
     .populate('company', 'name cif')
     .populate('client', 'name cif')
     .populate('project', 'name projectCode')
+
+    if (!albaran) throw AppError.notFound("No se pudo descargar pdf")
 
     const isOwner = albaran.user._id.equals(user._id)
     const isSameCompany = albaran.company._id.equals(company)
@@ -234,7 +234,7 @@ export async function signPdf(req,res) {
     const { id } = req.params
     const io = req.app.get('io')
 
-    if (!company || !id) throw AppError.badRequest("No se pudo descargar pdf")
+    if (!company || !id) throw AppError.badRequest("No se pudo firmar pdf")
 
     const albaran = await DeliveryNote.findById(id)
     .populate('user', 'email name lastName')
@@ -242,10 +242,10 @@ export async function signPdf(req,res) {
     .populate('client', 'name cif')
     .populate('project', 'name projectCode')
 
-    if (!req.file) {
-        return AppError.badRequest("No se subio firma")
-    }
-    
+    if (!albaran) throw AppError.notFound("No se pudo firmar pdf")
+    if (!req.file) throw AppError.badRequest("No se pudo firmar pdf")
+    if (albaran.signed) throw AppError.badRequest("No se pudo firmar pdf")
+
     const pdfBuffer = await generateSignedPdf(albaran, req.file.buffer);
 
     const pdfResult = await cloudinaryService.uploadBuffer(pdfBuffer, {
@@ -278,20 +278,18 @@ export async function deleteDeliveryNote(req, res) {
 
     const {id} = req.params
 
-    if (!id) {
-        throw AppError.badRequest("No se pudo eliminar albaran")
-    }
+    if (!id) throw AppError.badRequest("No se pudo eliminar albaran")
 
-    const albaran = await DeliveryNote.find({_id: id, company: company})
+    const albaran = await DeliveryNote.findOne({_id: id, company: company})
 
     if (!albaran) throw AppError.notFound("No se pudo eliminar albaran")
 
     if (albaran.signed) throw AppError.badRequest("No se pudo eliminar albaran")
 
     if (softDelete) {
-        await Project.softDeleteById(id,req.user.email)
+        await DeliveryNote.softDeleteById(id,req.user.email)
     } else {
-        await Project.hardDelete(id)
+        await DeliveryNote.hardDelete(id)
     }
 
     res.status(200).json({message: "Albaran eliminado"})

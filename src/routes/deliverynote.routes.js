@@ -323,7 +323,7 @@ router.get('/pdf/:id',authMiddleware,validate(downloadPDFSchema),returnPdf)
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.patch('/:id/sign',authMiddleware,uploadMiddleware.single('signature'),signPdf)
+router.patch('/:id/sign',authMiddleware,checkRol(['admin']),uploadMiddleware.single('signature'),signPdf)
 
 /**
  * @openapi
@@ -377,6 +377,6 @@ router.patch('/:id/sign',authMiddleware,uploadMiddleware.single('signature'),sig
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.delete("/:id", authMiddleware, checkRol('admin'), validate(deleteDeliveryNoteSchema), deleteDeliveryNote)
+router.delete("/:id", authMiddleware, checkRol(['admin']), validate(deleteDeliveryNoteSchema), deleteDeliveryNote)
 
 export default router;
