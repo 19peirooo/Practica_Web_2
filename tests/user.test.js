@@ -6,13 +6,16 @@ import RefreshToken from "../src/models/refreshtoken.models.js";
 import cloudinaryService from "../src/services/cloudinary.service.js";
 import { userData, adminData, guestData, userOnboardingData, companyOnboardingData, invalidUserData } from "./testData.js";
 import { connectDB, closeDB } from "./setup.js";
+import { setupMock } from "./mocks.js";
 
 let accessToken
 let refreshToken
 let adminUser
 let code
 
-import app from "../src/app.js";
+await setupMock();
+
+const { default: app } = await import("../src/app.js");
 
 beforeAll(async () => {
   await connectDB();
@@ -561,22 +564,22 @@ describe("User Endpoints", () => {
         .send(companyOnboardingData);
     });
 
-//     it("✅ should upload company logo", async () => {
-// 
-//       const res = await request(app)
-//         .patch("/api/user/logo")
-//         .set("Authorization", `Bearer ${accessToken}`)
-//         .attach("logo", Buffer.from("fake image"), "logo.png");
-// 
-//       expect(res.statusCode).toBe(201);
-//       expect(res.body).toHaveProperty("logo");
-//       expect(res.body.message).toBe("Avatar actualizado");
-// 
-//       const user = await User.findOne({ email: adminData.email });
-//       const company = await Company.findById(user.company);
-// 
-//       expect(company.logo).toBeTruthy();
-//     });
+    it("✅ should upload company logo", async () => {
+
+      const res = await request(app)
+        .patch("/api/user/logo")
+        .set("Authorization", `Bearer ${accessToken}`)
+        .attach("logo", Buffer.from("fake image"), "logo.png");
+
+      expect(res.statusCode).toBe(201);
+      expect(res.body).toHaveProperty("logo");
+      expect(res.body.message).toBe("Avatar actualizado");
+
+      const user = await User.findOne({ email: adminData.email });
+      const company = await Company.findById(user.company);
+
+      expect(company.logo).toBeTruthy();
+    });
 
     it("❌ should fail without token", async () => {
 

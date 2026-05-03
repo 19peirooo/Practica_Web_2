@@ -1,16 +1,20 @@
 import request from "supertest";
 import mongoose from "mongoose";
-import app from "../src/app.js";
 import Client from "../src/models/client.models.js";
 import User from "../src/models/user.models.js";
 import Company from "../src/models/company.models.js";  
 import { userData, guestData, userOnboardingData, companyOnboardingData, clientData, clientData2 } from "./testData.js";
 import { connectDB, closeDB, ioMock } from "./setup.js";
+import { setupMock } from "./mocks.js";
 
 let token;
 let user;
 let company;
 let clientId;
+
+await setupMock();
+
+const { default: app } = await import("../src/app.js");
 
 beforeAll(async () => {
   await connectDB();

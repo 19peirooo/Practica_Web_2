@@ -1,18 +1,24 @@
 import request from "supertest";
 import mongoose from "mongoose";
-import app from "../src/app.js";
 import Client from "../src/models/client.models.js";
 import Project from "../src/models/project.models.js";
 import DeliveryNote from "../src/models/deliverynote.models.js";
 import { userData, guestData, userOnboardingData, companyOnboardingData, clientData, projectData, 
   deliveryNoteData, deliveryNoteData2, invalidDeliveryNoteData } from "./testData.js";
 import { connectDB, closeDB, ioMock } from "./setup.js";
+import { setupMock } from "./mocks.js";
+
+await setupMock();
+
+const { default: app } = await import("../src/app.js");
 
 let token;
 let user;
 let company;
 let projectId;
 let clientId;
+
+const validPngBuffer = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=", "base64");
 
 beforeAll(async () => {
   await connectDB();
@@ -293,35 +299,38 @@ describe("Delivery Note Endpoints", () => {
       expect(res.statusCode).toBe(400);
     });
 
-//     it("✅ should sign delivery note", async () => {
-//       const res = await request(app)
-//         .patch(`/api/deliverynote/${deliveryNoteId}/sign`)
-//         .set("Authorization", `Bearer ${token}`)
-//         .attach("signature", Buffer.from("fake"), "signature.png");
-// 
-//       expect(res.statusCode).toBe(200);
-//     });
+    it("✅ should sign delivery note", async () => {
+      const res = await request(app)
+        .patch(`/api/deliverynote/${deliveryNoteId}/sign`)
+        .set("Authorization", `Bearer ${token}`)
+        .attach("signature", validPngBuffer, {
+            filename: "signature.png",
+            contentType: "image/png"
+        });
+
+      expect(res.statusCode).toBe(200);
+    });
     
-//     it("❌ should fail if guest", async () => {
-// 
-//       await request(app)
-//         .put("/api/user/invite")
-//         .set("Authorization", `Bearer ${token}`)
-//         .send(guestData);
-// 
-//       const login = await request(app)
-//         .post("/api/user/login")
-//         .send(guestData);
-// 
-//       token = login.body.accessToken;
-// 
-//       const res = await request(app)
-//         .patch(`/api/deliverynote/${deliveryNoteId}/sign`)
-//         .set("Authorization", `Bearer ${token}`)
-//         .attach("signature", Buffer.from("fake"), "signature.png");
-// 
-//       expect(res.statusCode).toBe(403);
-//     });
+    it("❌ should fail if guest", async () => {
+
+      await request(app)
+        .put("/api/user/invite")
+        .set("Authorization", `Bearer ${token}`)
+        .send(guestData);
+
+      const login = await request(app)
+        .post("/api/user/login")
+        .send(guestData);
+
+      token = login.body.accessToken;
+
+      const res = await request(app)
+        .patch(`/api/deliverynote/${deliveryNoteId}/sign`)
+        .set("Authorization", `Bearer ${token}`)
+        .attach("signature", Buffer.from("fake"), "signature.png");
+
+      expect(res.statusCode).toBe(403);
+    });
   });
 
   describe("DELETE /api/deliverynote/:id", () => {
