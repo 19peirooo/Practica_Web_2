@@ -1,9 +1,22 @@
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
+import { jest } from "@jest/globals";
+
+process.env.JWT_SECRET = "testsecret";
 
 let mongo;
 
 export const connectDB = async () => {
+
+  await jest.unstable_mockModule("../src/services/mail.service.js", () => ({
+    sendVerificationEmail: jest.fn().mockResolvedValue(true),
+  }));
+
+  await jest.unstable_mockModule("../src/utils/handleLogger.js", () => ({
+    sendSlackNotification: jest.fn().mockResolvedValue(true),
+    loggerStream: { write: jest.fn() },
+  }));
+
   mongo = await MongoMemoryServer.create();
   const uri = mongo.getUri();
 
@@ -15,23 +28,3 @@ export const closeDB = async () => {
   await mongoose.connection.close();
   await mongo.stop();
 };
-
-export const clearDB = async () => {
-  const collections = mongoose.connection.collections;
-
-  for (const key in collections) {
-    await collections[key].deleteMany();
-  }
-};
-
-beforeAll(async () => {
-  await connectDB();
-});
-
-afterEach(async () => {
-  await clearDB();
-});
-
-afterAll(async () => {
-  await closeDB();
-});

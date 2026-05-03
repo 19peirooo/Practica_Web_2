@@ -1,22 +1,33 @@
 import request from "supertest";
+import mongoose from "mongoose";
 import app from "../src/app.js";
 import User from "../src/models/user.models.js";
 import Company from "../src/models/company.models.js"
 import RefreshToken from "../src/models/refreshtoken.models.js";
 import { userData, adminData, guestData, userOnboardingData, companyOnboardingData, invalidUserData } from "./testData.js";
+import { connectDB, closeDB } from "./setup.js";
 
 let accessToken
 let refreshToken
 let adminUser
 let code
 
+beforeAll(async () => {
+  await connectDB();
+});
+
+afterAll(async () => {
+  await closeDB();
+});
+
 describe("User Endpoints", () => {
 
   beforeEach(async () => {
-    await User.deleteMany();
-    await RefreshToken.deleteMany();
-    await Company.deleteMany();
-  });
+    const collections = mongoose.connection.collections;
+    for (const key in collections) {
+      await collections[key].deleteMany({});
+    }
+  })
 
   describe("POST /api/user/register", () => {
 
@@ -228,27 +239,16 @@ describe("User Endpoints", () => {
     })
 
     it("✅ should complete company onboarding as guest", async () => {
+
       const company = await Company.create({
-        name: "Empresa Existente",
-        cif: "B-99999999",
-        address: { street: "X", number: "1", postal: "1", city: "X", province: "X" }
+        ...companyOnboardingData,
+        owner: new mongoose.Types.ObjectId()
       });
 
       const res = await request(app)
         .patch("/api/user/company")
         .set("Authorization", `Bearer ${accessToken}`)
-        .send({
-          name: "Otra Empresa",
-          cif: "B-99999999",
-          address: {
-            street: "X",
-            number: "1",
-            postal: "1",
-            city: "X",
-            province: "X"
-          },
-          isFreelance: false
-        });
+        .send(companyOnboardingData)
 
       expect(res.statusCode).toBe(200);
 
@@ -400,34 +400,12 @@ describe("User Endpoints", () => {
       await request(app)
         .put("/api/user/register")
         .set("Authorization", `Bearer ${accessToken}`)
-        .send({
-          name: "Admin",
-          lastName: "User",
-          nif: "12345678A",
-          address: {
-            street: "Calle A",
-            number: "1",
-            postal: "28001",
-            city: "Madrid",
-            province: "Madrid"
-          }
-        });
+        .send(userOnboardingData);
 
       await request(app)
         .patch("/api/user/company")
         .set("Authorization", `Bearer ${accessToken}`)
-        .send({
-          name: "Empresa Admin",
-          cif: "B12345678",
-          address: {
-            street: "Empresa",
-            number: "1",
-            postal: "28002",
-            city: "Madrid",
-            province: "Madrid"
-          },
-          isFreelance: false
-        });
+        .send(companyOnboardingData);
 
       adminUser = await User.findOne({ email: adminData.email });
     })
@@ -521,18 +499,7 @@ describe("User Endpoints", () => {
       await request(app)
         .patch("/api/user/company")
         .set("Authorization", `Bearer ${guestToken}`)
-        .send({
-          name: "Empresa Admin",
-          cif: "B12345678",
-          address: {
-            street: "Empresa",
-            number: "1",
-            postal: "28002",
-            city: "Madrid",
-            province: "Madrid"
-          },
-          isFreelance: false
-        });
+        .send(companyOnboardingData);
 
       const res = await request(app)
         .put("/api/user/invite")

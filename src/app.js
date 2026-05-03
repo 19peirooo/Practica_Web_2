@@ -36,7 +36,9 @@ app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(sanitizeBody);
 app.use(limitStringLength(5000));
-app.use(limiter)
+if (process.env.NODE_ENV !== 'test') {
+  app.use(limiter);
+}
 
 if (isProduction) {
   app.use(morgan('combined'))
@@ -44,18 +46,22 @@ if (isProduction) {
   app.use(morgan('dev'))
 }
 
-morganBody(app, {
-  noColors: true,
-  skip: (req, res) => res.statusCode < 500, 
-  stream: loggerStream
-});
+if (process.env.NODE_ENV !== 'test') {
+  morganBody(app, {
+    noColors: true,
+    skip: (req, res) => res.statusCode < 500,
+    stream: loggerStream
+  });
+}
 
 // Archivos estáticos
 app.use('/uploads', express.static('uploads'));
 
 // Rutas de la API
 app.use('/api', routes);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
+if (process.env.NODE_ENV !== 'test') {
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
+}
 
 app.get('/health', async (req, res) => {
   const healthcheck = {

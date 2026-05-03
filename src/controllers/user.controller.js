@@ -41,8 +41,6 @@ export async function registerUser(req, res) {
     
     ee.emit('user:registered', user.email)
 
-    await sendSlackNotification("✅ Registro Completado")
-
     await sendVerificationEmail(user.email,code)
 
     res.status(201).json({

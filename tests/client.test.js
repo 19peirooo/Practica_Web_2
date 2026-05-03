@@ -3,37 +3,47 @@ import mongoose from "mongoose";
 import app from "../src/app.js";
 import Client from "../src/models/client.models.js";
 import User from "../src/models/user.models.js";
-import Company from "../src/models/company.models.js";
-import { beforeEach, it } from "node:test";
+import Company from "../src/models/company.models.js";  
 import { userData, guestData, userOnboardingData, companyOnboardingData, clientData, clientData2 } from "./testData.js";
+import { connectDB, closeDB } from "./setup.js";
 
 let token;
 let user;
 let company;
 let clientId;
 
+beforeAll(async () => {
+  await connectDB();
+});
+
+afterAll(async () => {
+  await closeDB();
+});
+
 describe("Client Endpoints", () => {
 
   beforeEach(async () => {
-      await Client.deleteMany()
-      await User.deleteMany()
-      await Company.deleteMany()
 
-      const registerUser = await request(app)
-      .post("/api/user/register")
-      .send(userData)
+    const collections = mongoose.connection.collections;
+    for (const key in collections) {
+        await collections[key].deleteMany({});
+    }
 
-      token = registerUser.body.accessToken
+    const registerUser = await request(app)
+        .post("/api/user/register")
+        .send(userData)
 
-      const onboardingUser = await request(app)
-          .put('/api/user/register')
-          .set("Authorization", `Bearer ${token}`)
-          .send(userOnboardingData)
+    token = registerUser.body.accessToken
 
-      const onboardingCompany = await request(app)
-          .patch('/api/user/company')
-          .set("Authorization", `Bearer ${token}`)
-          .send(companyOnboardingData)
+    const onboardingUser = await request(app)
+        .put('/api/user/register')
+        .set("Authorization", `Bearer ${token}`)
+        .send(userOnboardingData)
+
+    const onboardingCompany = await request(app)
+        .patch('/api/user/company')
+        .set("Authorization", `Bearer ${token}`)
+        .send(companyOnboardingData)
 
   })
 
@@ -80,7 +90,7 @@ describe("Client Endpoints", () => {
     });
 
     it ("❌ should fail if guest", async () => {
-      const guest = request(app).put('/api/user/invite')
+      const guest = await request(app).put('/api/user/invite')
       .set("Authorization", `Bearer ${token}`)
       .send(guestData)
 
@@ -145,7 +155,7 @@ describe("Client Endpoints", () => {
     });
 
     it ("❌ should fail if guest", async () => {
-      const guest = request(app)
+      const guest = await request(app)
       .put('/api/user/invite')
       .set("Authorization", `Bearer ${token}`)
       .send(guestData)
@@ -257,7 +267,7 @@ describe("Client Endpoints", () => {
     })
 
     it("❌ should fail without token", async () => {
-      const res = await request(app).get(`/api/client/${idClient}`);
+      const res = await request(app).get(`/api/client/${clientId}`);
       expect(res.statusCode).toBe(401)
     });
   });
@@ -306,7 +316,7 @@ describe("Client Endpoints", () => {
     });
 
     it ("❌ should fail if guest", async () => {
-      const guest = request(app)
+      const guest = await request(app)
       .put('/api/user/invite')
       .set("Authorization", `Bearer ${token}`)
       .send(guestData)
@@ -373,12 +383,12 @@ describe("Client Endpoints", () => {
     });
 
     it("❌ should fail without token", async () => {
-      const res = await request(app).patch(`/api/client/${idClient}/restore`);
+      const res = await request(app).patch(`/api/client/${clientId}/restore`);
       expect(res.statusCode).toBe(401)
     });
 
     it ("❌ should fail if guest", async () => {
-      const guest = request(app)
+      const guest = await request(app)
       .put('/api/user/invite')
       .set("Authorization", `Bearer ${token}`)
       .send(guestData)

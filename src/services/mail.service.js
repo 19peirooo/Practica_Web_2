@@ -9,6 +9,7 @@ const transporter = nodemailer.createTransport({
 });
 
 export const sendVerificationEmail = async (email, code) => {
+  if (process.env.NODE_ENV === 'test') return
   await transporter.sendMail({
     from: `"BildyApp" <${process.env.EMAIL_USER}>`,
     to: email,
