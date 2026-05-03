@@ -1,9 +1,9 @@
 import request from "supertest";
 import mongoose from "mongoose";
-import app from "../src/app.js";
 import User from "../src/models/user.models.js";
 import Company from "../src/models/company.models.js"
 import RefreshToken from "../src/models/refreshtoken.models.js";
+import cloudinaryService from "../src/services/cloudinary.service.js";
 import { userData, adminData, guestData, userOnboardingData, companyOnboardingData, invalidUserData } from "./testData.js";
 import { connectDB, closeDB } from "./setup.js";
 
@@ -11,6 +11,8 @@ let accessToken
 let refreshToken
 let adminUser
 let code
+
+import app from "../src/app.js";
 
 beforeAll(async () => {
   await connectDB();
@@ -194,6 +196,26 @@ describe("User Endpoints", () => {
         .set("Authorization", `Bearer ${accessToken}`)
         .send({
           name: "Paco"
+        })
+      
+      expect(res.statusCode).toBe(400)
+    })
+
+    it("❌ cannot onboard invalid cif", async () => {
+      const res = await request(app)
+        .put('/api/user/register')
+        .set("Authorization", `Bearer ${accessToken}`)
+        .send({
+          name: "Test",
+          lastName: "User",
+          nif: "123456A",
+          address: {
+            street: "Travesia de Antonio Nebrija",
+            number: 4,
+            postal: "28040",
+            city:"Madrid",
+            province: "Madrid"
+          }
         })
       
       expect(res.statusCode).toBe(400)
@@ -513,5 +535,127 @@ describe("User Endpoints", () => {
     });
 
   })
+
+  describe("PATCH /api/user/logo", () => {
+
+    beforeEach(async () => {
+      // Registrar usuario admin
+      await request(app).post("/api/user/register").send(adminData);
+
+      const login = await request(app)
+        .post("/api/user/login")
+        .send(adminData);
+
+      accessToken = login.body.accessToken;
+
+      // Onboarding usuario
+      await request(app)
+        .put("/api/user/register")
+        .set("Authorization", `Bearer ${accessToken}`)
+        .send(userOnboardingData);
+
+      // Crear compañía
+      await request(app)
+        .patch("/api/user/company")
+        .set("Authorization", `Bearer ${accessToken}`)
+        .send(companyOnboardingData);
+    });
+
+//     it("✅ should upload company logo", async () => {
+// 
+//       const res = await request(app)
+//         .patch("/api/user/logo")
+//         .set("Authorization", `Bearer ${accessToken}`)
+//         .attach("logo", Buffer.from("fake image"), "logo.png");
+// 
+//       expect(res.statusCode).toBe(201);
+//       expect(res.body).toHaveProperty("logo");
+//       expect(res.body.message).toBe("Avatar actualizado");
+// 
+//       const user = await User.findOne({ email: adminData.email });
+//       const company = await Company.findById(user.company);
+// 
+//       expect(company.logo).toBeTruthy();
+//     });
+
+    it("❌ should fail without token", async () => {
+
+      const res = await request(app)
+        .patch("/api/user/logo")
+        .attach("logo", Buffer.from("fake image"), "logo.png");
+
+      expect(res.statusCode).toBe(401);
+    });
+
+    it("❌ should fail without file", async () => {
+
+      const res = await request(app)
+        .patch("/api/user/logo")
+        .set("Authorization", `Bearer ${accessToken}`);
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it("❌ should fail if user has no company", async () => {
+
+      // Nuevo usuario sin company
+      const register = await request(app)
+        .post("/api/user/register")
+        .send({
+          email: "no-company@test.com",
+          password: "12345678"
+        });
+
+      const token = register.body.accessToken;
+
+      const res = await request(app)
+        .patch("/api/user/logo")
+        .set("Authorization", `Bearer ${token}`)
+        .attach("logo", Buffer.from("fake image"), "logo.png");
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it("❌ should fail if user is not admin", async () => {
+
+      const register = await request(app)
+        .post("/api/user/register")
+        .send({
+          email: "guest2@test.com",
+          password: "12345678"
+        });
+
+      const guestToken = register.body.accessToken;
+
+      await request(app)
+        .put("/api/user/register")
+        .set("Authorization", `Bearer ${guestToken}`)
+        .send({
+          name: "Guest",
+          lastName: "User",
+          nif: "87654321B",
+          address: {
+            street: "Calle B",
+            number: "2",
+            postal: "28003",
+            city: "Madrid",
+            province: "Madrid"
+          }
+        });
+
+      await request(app)
+        .patch("/api/user/company")
+        .set("Authorization", `Bearer ${guestToken}`)
+        .send(companyOnboardingData);
+
+      const res = await request(app)
+        .patch("/api/user/logo")
+        .set("Authorization", `Bearer ${guestToken}`)
+        .attach("logo", Buffer.from("fake image"), "logo.png");
+
+      expect(res.statusCode).toBe(403);
+    });
+
+  });
 
 });
