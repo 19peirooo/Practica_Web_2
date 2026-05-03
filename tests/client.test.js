@@ -5,7 +5,7 @@ import Client from "../src/models/client.models.js";
 import User from "../src/models/user.models.js";
 import Company from "../src/models/company.models.js";  
 import { userData, guestData, userOnboardingData, companyOnboardingData, clientData, clientData2 } from "./testData.js";
-import { connectDB, closeDB } from "./setup.js";
+import { connectDB, closeDB, ioMock } from "./setup.js";
 
 let token;
 let user;
@@ -14,6 +14,8 @@ let clientId;
 
 beforeAll(async () => {
   await connectDB();
+
+  app.set("io", ioMock);
 });
 
 afterAll(async () => {
@@ -109,8 +111,13 @@ describe("Client Endpoints", () => {
 
   describe("PUT /api/client/:id", () => {
     beforeEach(async () => {
-      const client = await Client.create(clientData);
-      clientId = client._id;
+      await request(app)
+        .post("/api/client")
+        .set("Authorization", `Bearer ${token}`)
+        .send(clientData);
+
+      const client = await Client.findOne({cif: clientData.cif})
+      clientId = client._id
     });
 
     it("✅ should update client", async () => {
@@ -133,7 +140,7 @@ describe("Client Endpoints", () => {
 
     it("❌ should fail in invalid id", async () => {
       const res = await request(app)
-        .put(`/api/client/FA?KE_ID`)
+        .put(`/api/client/FA:KE_ID`)
         .set("Authorization", `Bearer ${token}`)
         .send({ name: "Updated" });
 
@@ -175,10 +182,15 @@ describe("Client Endpoints", () => {
 
   describe("GET /api/client", () => {
     beforeEach(async () => {
-      await Client.create([
-        clientData,
-        clientData2
-      ]);
+      await request(app)
+        .post("/api/client")
+        .set("Authorization", `Bearer ${token}`)
+        .send(clientData);
+
+        await request(app)
+        .post("/api/client")
+        .set("Authorization", `Bearer ${token}`)
+        .send(clientData2);
     });
 
     it("✅ should get clients list", async () => {
@@ -237,8 +249,13 @@ describe("Client Endpoints", () => {
 
   describe("GET /api/client/:id", () => {
     beforeEach(async () => {
-      const client = await Client.create(clientData);
-      clientId = client._id;
+      await request(app)
+        .post("/api/client")
+        .set("Authorization", `Bearer ${token}`)
+        .send(clientData);
+
+      const client = await Client.findOne({cif: clientData.cif})
+      clientId = client._id
     });
 
     it("✅ should get client by id", async () => {
@@ -260,7 +277,7 @@ describe("Client Endpoints", () => {
 
     it("❌ should fail in invalid id", async () => {
       const res = await request(app)
-        .get(`/api/client/FA?KE_ID`)
+        .get(`/api/client/FA:KE_ID`)
         .set("Authorization", `Bearer ${token}`)
 
       expect(res.statusCode).toBe(400);
@@ -274,8 +291,13 @@ describe("Client Endpoints", () => {
 
   describe("DELETE /api/client/:id", () => {
     beforeEach(async () => {
-      const client = await Client.create(clientData);
-      clientId = client._id;
+      await request(app)
+        .post("/api/client")
+        .set("Authorization", `Bearer ${token}`)
+        .send(clientData);
+
+      const client = await Client.findOne({cif: clientData.cif})
+      clientId = client._id
     });
 
     it("✅ should soft delete client", async () => {
@@ -304,7 +326,7 @@ describe("Client Endpoints", () => {
 
     it("❌ should fail in invalid id", async () => {
       const res = await request(app)
-        .delete(`/api/client/FA?KE_ID`)
+        .delete(`/api/client/FA:KE_ID`)
         .set("Authorization", `Bearer ${token}`)
 
       expect(res.statusCode).toBe(400);
@@ -336,10 +358,19 @@ describe("Client Endpoints", () => {
   describe("GET /api/client/archived", () => {
 
     beforeEach(async () => {
-      const client = await Client.create(clientData);
+      await request(app)
+        .post("/api/client")
+        .set("Authorization", `Bearer ${token}`)
+        .send(clientData);
 
-      await Client.softDeleteById(client._id);
-    })
+      const client = await Client.findOne({cif: clientData.cif})
+      clientId = client._id
+
+      await request(app)
+        .delete(`/api/client/${clientId}?soft=true`)
+        .set("Authorization", `Bearer ${token}`);
+
+    });
 
     it("✅ should get archived clients", async () => {
       
@@ -359,10 +390,18 @@ describe("Client Endpoints", () => {
 
   describe("PATCH /api/client/:id/restore", () => {
     beforeEach(async () => {
-      const client = await Client.create(clientData);
+      await request(app)
+        .post("/api/client")
+        .set("Authorization", `Bearer ${token}`)
+        .send(clientData);
 
-      await Client.softDeleteById(client._id);
-      clientId = client._id;
+      const client = await Client.findOne({cif: clientData.cif})
+      clientId = client._id
+
+      await request(app)
+        .delete(`/api/client/${clientId}?soft=true`)
+        .set("Authorization", `Bearer ${token}`);
+
     });
 
     it("✅ should restore client", async () => {
@@ -406,7 +445,7 @@ describe("Client Endpoints", () => {
 
     it("❌ should fail in invalid id", async () => {
       const res = await request(app)
-        .patch(`/api/client/FA?KE_ID/restore`)
+        .patch(`/api/client/FA:KE_ID/restore`)
         .set("Authorization", `Bearer ${token}`)
 
       expect(res.statusCode).toBe(400);

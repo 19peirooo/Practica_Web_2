@@ -199,7 +199,7 @@ export async function restoreClient(req, res) {
 
     const client = await Client.findDeleted({_id: id, company: company})
     
-    if (!client) throw AppError.notFound("No se pudo restaurar cliente")
+    if (!client || client.length === 0) throw AppError.notFound("No se pudo restaurar cliente")
 
     await Client.restoreById(id)
 

@@ -6,6 +6,12 @@ process.env.JWT_SECRET = "testsecret";
 
 let mongo;
 
+export const ioMock = {
+  to: jest.fn(() => ({
+    emit: jest.fn()
+  }))
+};
+
 export const connectDB = async () => {
 
   await jest.unstable_mockModule("../src/services/mail.service.js", () => ({
