@@ -3,6 +3,7 @@ import deliveryNoteHandler from "./handlers/deliverynote.handler.js";
 import projectHandler from "./handlers/project.handler.js";
 import {authMiddleware} from "./middleware/auth.middleware.js"
 import { Server } from "socket.io";
+import User from "../models/user.models.js"
 
 export default function setupSocket(httpServer) {
 
@@ -12,12 +13,12 @@ export default function setupSocket(httpServer) {
 
   io.use(authMiddleware);
 
-  io.on("connection", (socket) => {
-    const companyId = socket.user.company;
+  io.on("connection",async (socket) => {
+    const user = await User.findById(socket.user._id)
 
-    socket.join(companyId);
+    socket.join(user.company.toString());
 
-    console.log(`[SOCKET] Usuario ${socket.user.id} conectado a sala ${companyId}`);
+    console.log(`[SOCKET] Usuario ${socket.user._id} conectado a sala ${user.company}`);
 
     clientHandler(socket)
     projectHandler(socket)

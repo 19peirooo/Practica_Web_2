@@ -11,6 +11,7 @@ export const authMiddleware = (socket, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     socket.user = decoded;
+
     next();
   } catch (error) {
     next(new Error('Token inválido'));
