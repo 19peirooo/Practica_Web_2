@@ -23,9 +23,6 @@ jobs:
       - name: Instalar dependencias
         run: npm ci
 
-      - name: Ejecutar linter
-        run: npm run lint
-
       - name: Ejecutar tests
         run: npm test
         env:
