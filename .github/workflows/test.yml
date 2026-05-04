@@ -28,3 +28,9 @@ jobs:
         env:
           NODE_ENV: test
           JWT_SECRET: test-secret-32-characters-long!!
+
+      - name: Ejecutar coverage
+        run: npm run test:coverage
+        env:
+          NODE_ENV: test
+          JWT_SECRET: test-secret-32-characters-long!!
