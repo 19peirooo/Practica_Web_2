@@ -10,18 +10,22 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    timeout-minutes: 15
+
     steps:
       - name: Checkout código
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: 'npm'
+          node-version: 22
+          cache: npm
 
-      - name: Instalar dependencias
-        run: npm install
+      - name: Instalar dependencias (CI)
+        run: npm ci
 
       - name: Ejecutar tests
         run: npm run test
