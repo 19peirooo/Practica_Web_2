@@ -74,6 +74,35 @@ describe("Project Endpoints", () => {
       expect(res.statusCode).toBe(201);
     });
 
+    it("❌ should fail user has no company", async () => {
+          
+      const registerUser = await request(app)
+      .post("/api/user/register")
+      .send({
+        email: "nocompany@test.com",
+        password: "12345678"
+      });
+
+      token = registerUser.body.accessToken
+
+      const res = await request(app)
+        .post("/api/project")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ ...projectData, client: clientId });
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it("❌ should fail body has no client", async () => {
+
+      const res = await request(app)
+        .post("/api/project")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ ...projectData });
+
+      expect(res.statusCode).toBe(400);
+    });
+
     it("❌ should fail duplicate projectCode", async () => {
       await request(app)
         .post("/api/project")
@@ -142,6 +171,26 @@ describe("Project Endpoints", () => {
         .send({ name: "Updated" });
 
       expect(res.statusCode).toBe(200);
+    });
+
+    it("❌ should fail user has no company", async () => {
+          
+      const registerUser = await request(app)
+      .post("/api/user/register")
+      .send({
+        email: "nocompany@test.com",
+        password: "12345678"
+      });
+
+      token = registerUser.body.accessToken
+
+      const res = await request(app)
+        .put(`/api/project/${projectId}`)
+        .set("Authorization", `Bearer ${token}`)
+        .send({ name: "Updated" });
+
+
+      expect(res.statusCode).toBe(400);
     });
 
     it("❌ should fail invalid field", async () => {
@@ -220,6 +269,25 @@ describe("Project Endpoints", () => {
       expect(res.body.projects.length).toBe(2);
     });
 
+    it("❌ should fail user has no company", async () => {
+          
+      const registerUser = await request(app)
+      .post("/api/user/register")
+      .send({
+        email: "nocompany@test.com",
+        password: "12345678"
+      });
+
+      token = registerUser.body.accessToken
+
+      const res = await request(app)
+        .get("/api/project")
+        .set("Authorization", `Bearer ${token}`);
+
+
+      expect(res.statusCode).toBe(400);
+    });
+
     it("✅ should filter by name", async () => {
       const res = await request(app)
         .get(`/api/project?name=${projectData.name}`)
@@ -238,9 +306,9 @@ describe("Project Endpoints", () => {
       expect(res.body.projects.length).toBe(2);
     });
 
-    it("✅ should filter by name", async () => {
+    it("✅ should filter by projectCode", async () => {
       const res = await request(app)
-        .get(`/api/project?name=${projectData.name}`)
+        .get(`/api/project?projectCode=${projectData.projectCode}`)
         .set("Authorization", `Bearer ${token}`);
 
       expect(res.statusCode).toBe(200);
@@ -256,9 +324,18 @@ describe("Project Endpoints", () => {
       expect(res.body.projects.length).toBe(1);
     });
 
-    it("✅ should sort by createdAt", async () => {
+    it("✅ should sort by createdAt descending", async () => {
       const res = await request(app)
         .get(`/api/project?sort=-createdAt`)
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.projects.length).toBe(2);
+    });
+
+    it("✅ should sort by createdAt ascending", async () => {
+      const res = await request(app)
+        .get(`/api/project?sort=createdAt`)
         .set("Authorization", `Bearer ${token}`);
 
       expect(res.statusCode).toBe(200);
@@ -306,6 +383,25 @@ describe("Project Endpoints", () => {
         .set("Authorization", `Bearer ${token}`);
 
       expect(res.statusCode).toBe(200);
+    });
+
+    it("❌ should fail user has no company", async () => {
+          
+      const registerUser = await request(app)
+      .post("/api/user/register")
+      .send({
+        email: "nocompany@test.com",
+        password: "12345678"
+      });
+
+      token = registerUser.body.accessToken
+
+      const res = await request(app)
+        .get(`/api/project/${projectId}`)
+        .set("Authorization", `Bearer ${token}`);
+
+
+      expect(res.statusCode).toBe(400);
     });
 
     it("❌ should fail not found", async () => {
