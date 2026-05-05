@@ -152,10 +152,7 @@ export async function getDeliveryNotes(req, res) {
         totalPages: totalPages,
         currentPage: page,
         deliveryNotes: albaranes
-    })
-
-
-
+    })  
 
 }
 

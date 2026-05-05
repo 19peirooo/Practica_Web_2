@@ -75,11 +75,20 @@ describe("Delivery Note Endpoints", () => {
 
   describe("POST /api/deliverynote", () => {
 
-    it("✅ should create delivery note", async () => {
+    it("✅ should create material delivery note", async () => {
       const res = await request(app)
         .post("/api/deliverynote")
         .set("Authorization", `Bearer ${token}`)
         .send({ ...deliveryNoteData, project: projectId });
+
+      expect(res.statusCode).toBe(201);
+    });
+
+    it("✅ should create hours delivery note", async () => {
+      const res = await request(app)
+        .post("/api/deliverynote")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ ...deliveryNoteData2, project: projectId });
 
       expect(res.statusCode).toBe(201);
     });
@@ -156,6 +165,24 @@ describe("Delivery Note Endpoints", () => {
       expect(res.body.deliveryNotes.length).toBe(2);
     });
 
+    it("❌ should fail user has no company", async () => {
+          
+      const registerUser = await request(app)
+      .post("/api/user/register")
+      .send({
+        email: "nocompany@test.com",
+        password: "12345678"
+      });
+
+      token = registerUser.body.accessToken
+
+      const res = await request(app)
+        .get("/api/deliverynote")
+        .set("Authorization", `Bearer ${token}`)
+
+      expect(res.statusCode).toBe(400);
+    });
+
     it("✅ should filter by project", async () => {
       const res = await request(app)
         .get(`/api/deliverynote?project=${projectId}`)
@@ -163,6 +190,78 @@ describe("Delivery Note Endpoints", () => {
 
       expect(res.statusCode).toBe(200);
       expect(res.body.deliveryNotes.length).toBeGreaterThan(0);
+    });
+
+    it("✅ should filter by client", async () => {
+      const res = await request(app)
+        .get(`/api/deliverynote?client=${clientId}`)
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.deliveryNotes.length).toBeGreaterThan(0);
+    });
+
+    it("✅ should filter by format", async () => {
+      const res = await request(app)
+        .get(`/api/deliverynote?format=hours`)
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.deliveryNotes.length).toBe(1);
+    });
+
+    it("✅ should filter by description", async () => {
+      const res = await request(app)
+        .get(`/api/deliverynote?description=mat`)
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.deliveryNotes.length).toBe(1);
+    });
+
+    it("✅ should filter by workDate", async () => {
+      const res = await request(app)
+        .get(`/api/deliverynote?from=2025-01-01&to=2025-12-31`)
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.deliveryNotes.length).toBe(1);
+    });
+
+    it("✅ should filter by material", async () => {
+      const res = await request(app)
+        .get(`/api/deliverynote?material=Cobre`)
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.deliveryNotes.length).toBe(1);
+    });
+
+    it("✅ should filter by totalHours", async () => { 
+      const res = await request(app)
+        .get(`/api/deliverynote?totalHours=20`)
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.deliveryNotes.length).toBe(1);
+    });
+
+    it("✅ should filter by worker hours", async () => {
+      const res = await request(app)
+        .get(`/api/deliverynote?hours=10`)
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.deliveryNotes.length).toBe(1);
+    });
+
+    it("✅ should filter by worker name", async () => {
+      const res = await request(app)
+        .get(`/api/deliverynote?worker=Manolo`)
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.deliveryNotes.length).toBe(1);
     });
 
     it("✅ should paginate", async () => {
