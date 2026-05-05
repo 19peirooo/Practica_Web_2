@@ -8,9 +8,7 @@ export async function createClient(req,res) {
     const company = req.user.company
     const io = req.app.get('io')
 
-    if (!user.company) {
-        throw AppError.badRequest("No se pudo crear cliente")
-    }
+    if (!user.company) throw AppError.badRequest("No se pudo crear cliente")
 
     const dupClient = await Client.findOne({company: company, cif: req.body.cif})
 
@@ -156,6 +154,8 @@ export async function deleteClient(req, res) {
     if (!id) {
         throw AppError.badRequest("No se pudo eliminar cliente")
     }
+
+    if (!company) throw AppError.badRequest("No se pudo eliminar cliente")
 
     const client = await Client.findOne({_id: id, company: company})
 

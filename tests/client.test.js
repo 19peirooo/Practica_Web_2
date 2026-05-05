@@ -77,6 +77,25 @@ describe("Client Endpoints", () => {
       expect(res.statusCode).toBe(409);
     });
 
+    it("❌ should fail user has no company", async () => {
+      
+      const registerUser = await request(app)
+      .post("/api/user/register")
+      .send({
+        email: "nocompany@test.com",
+        password: "12345678"
+      });
+
+      token = registerUser.body.accessToken
+
+      const res = await request(app)
+        .post("/api/client")
+        .set("Authorization", `Bearer ${token}`)
+        .send(clientData);
+
+      expect(res.statusCode).toBe(400);
+    });
+
     it("❌ should fail if invalid user", async () => {
 
       const res = await request(app)
@@ -131,6 +150,25 @@ describe("Client Endpoints", () => {
         .send({ name: "Updated" });
 
       expect(res.statusCode).toBe(200);
+    });
+
+    it("❌ should fail user has no company", async () => {
+      
+      const registerUser = await request(app)
+      .post("/api/user/register")
+      .send({
+        email: "nocompany@test.com",
+        password: "12345678"
+      });
+
+      token = registerUser.body.accessToken
+
+      const res = await request(app)
+        .put(`/api/client/${clientId}`)
+        .set("Authorization", `Bearer ${token}`)
+        .send({ name: "Updated" });
+
+      expect(res.statusCode).toBe(400);
     });
 
     it("❌ should fail if invalid field", async () => {
@@ -206,9 +244,57 @@ describe("Client Endpoints", () => {
       expect(res.body.clients.length).toBe(2);
     });
 
+    it("❌ should fail user has no company", async () => {
+      
+      const registerUser = await request(app)
+      .post("/api/user/register")
+      .send({
+        email: "nocompany@test.com",
+        password: "12345678"
+      });
+
+      token = registerUser.body.accessToken
+
+      const res = await request(app)
+        .get("/api/client")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(res.statusCode).toBe(400);
+    });
+
     it("✅ should filter by name", async () => {
       const res = await request(app)
         .get("/api/client?name=test")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.clients.length).toBe(1);
+      expect(res.body.clients[0].name).toBe("testClient")
+    });
+
+    it("✅ should filter by cif", async () => {
+      const res = await request(app)
+        .get("/api/client?cif=A-23456789")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.clients.length).toBe(1);
+      expect(res.body.clients[0].name).toBe("testClient")
+    });
+
+    it("✅ should filter by email", async () => {
+      const res = await request(app)
+        .get("/api/client?email=testClient@mail.com")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.clients.length).toBe(1);
+      expect(res.body.clients[0].name).toBe("testClient")
+    });
+
+    it("✅ should filter by phone", async () => {
+      const res = await request(app)
+        .get("/api/client?phone=123456789")
         .set("Authorization", `Bearer ${token}`);
 
       expect(res.statusCode).toBe(200);
@@ -226,7 +312,7 @@ describe("Client Endpoints", () => {
       expect(res.body.clients[0].name).toBe("paco")
     })
 
-    it("✅ should sort by createdAt", async () => {
+    it("✅ should sort by createdAt ascending", async () => {
       const res = await request(app)
         .get("/api/client?sort=createdAt")
         .set("Authorization", `Bearer ${token}`);
@@ -234,6 +320,16 @@ describe("Client Endpoints", () => {
       expect(res.statusCode).toBe(200);
       expect(res.body.clients.length).toBe(2);
       expect(res.body.clients[0].name).toBe("testClient")
+    })
+
+    it("✅ should sort by createdAt descending", async () => {
+      const res = await request(app)
+        .get("/api/client?sort=-createdAt")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.clients.length).toBe(2);
+      expect(res.body.clients[0].name).toBe("paco")
     })
 
     it("❌ should fail if invalid filter", async () => {
@@ -269,6 +365,24 @@ describe("Client Endpoints", () => {
 
       expect(res.statusCode).toBe(200);
       expect(res.body._id).toBe(clientId.toString());
+    });
+
+    it("❌ should fail user has no company", async () => {
+      
+      const registerUser = await request(app)
+      .post("/api/user/register")
+      .send({
+        email: "nocompany@test.com",
+        password: "12345678"
+      });
+
+      token = registerUser.body.accessToken
+
+      const res = await request(app)
+        .get(`/api/client/${clientId}`)
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(res.statusCode).toBe(400);
     });
 
     it("❌ should fail if not found", async () => {
@@ -318,6 +432,24 @@ describe("Client Endpoints", () => {
         .set("Authorization", `Bearer ${token}`);
 
       expect(res.statusCode).toBe(200);
+    });
+
+    it("❌ should fail user has no company", async () => {
+      
+      const registerUser = await request(app)
+      .post("/api/user/register")
+      .send({
+        email: "nocompany@test.com",
+        password: "12345678"
+      });
+
+      token = registerUser.body.accessToken
+
+      const res = await request(app)
+        .delete(`/api/client/${clientId}?soft=true`)
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(res.statusCode).toBe(400);
     });
 
     it("❌ should fail if invalid query", async () => {
@@ -394,6 +526,24 @@ describe("Client Endpoints", () => {
       expect(res.body.clients.length).toBeGreaterThan(0);
     });
 
+    it("❌ should fail user has no company", async () => {
+      
+      const registerUser = await request(app)
+      .post("/api/user/register")
+      .send({
+        email: "nocompany@test.com",
+        password: "12345678"
+      });
+
+      token = registerUser.body.accessToken
+
+      const res = await request(app)
+        .get("/api/client/archived")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(res.statusCode).toBe(400);
+    });
+
     it("❌ should fail without token", async () => {
       const res = await request(app).get("/api/client/archived");
       expect(res.statusCode).toBe(401)
@@ -423,6 +573,24 @@ describe("Client Endpoints", () => {
 
       expect(res.statusCode).toBe(200);
       expect(res.body.message).toBe("Cliente Recuperado");
+    });
+
+    it("❌ should fail user has no company", async () => {
+      
+      const registerUser = await request(app)
+      .post("/api/user/register")
+      .send({
+        email: "nocompany@test.com",
+        password: "12345678"
+      });
+
+      token = registerUser.body.accessToken
+
+      const res = await request(app)
+        .patch(`/api/client/${clientId}/restore`)
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(res.statusCode).toBe(400);
     });
 
     it("❌ should fail if not found", async () => {

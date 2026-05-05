@@ -54,7 +54,8 @@ export const clientData = {
         "postal": "00000",
         "city": "x",
         "province": "x"
-    }
+    },
+    "phone": "123456789"
 }
 
 export const clientData2 = {
@@ -67,7 +68,8 @@ export const clientData2 = {
         "postal": "00000",
         "city": "x",
         "province": "x"
-    }
+    },
+    "phone": "987654321"
 }
 
 export const projectData = {
