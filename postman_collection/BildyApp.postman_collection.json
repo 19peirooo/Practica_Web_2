@@ -1,0 +1,2996 @@
+{
+  "info": {
+    "_postman_id": "e7ea0db6-fe80-46e9-89f1-ab1ef7c6bd2f",
+    "name": "BildyApp",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "54159087",
+    "_collection_link": "https://go.postman.co/collection/54159087-e7ea0db6-fe80-46e9-89f1-ab1ef7c6bd2f?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "Auth",
+          "item": [
+            {
+              "name": "Register User",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const response = pm.response.json();",
+                      "",
+                      "pm.test(\"Register returns tokens\", function () {",
+                      "    pm.expect(response.accessToken).to.exist;",
+                      "    pm.expect(response.refreshToken).to.exist;",
+                      "});",
+                      "",
+                      "if (response.accessToken) {",
+                      "    pm.environment.set(\"accessToken\", response.accessToken);",
+                      "}",
+                      "",
+                      "if (response.refreshToken) {",
+                      "    pm.environment.set(\"refreshToken\", response.refreshToken);",
+                      "}"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"victorpeiro05@gmail.com\",\n    \"password\": \"12345678\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{userUrl}}/register",
+                  "host": [
+                    "{{userUrl}}"
+                  ],
+                  "path": [
+                    "register"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Validate Email",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"verificationCode\": \"{{verificationCode}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{userUrl}}/validation",
+                  "host": [
+                    "{{userUrl}}"
+                  ],
+                  "path": [
+                    "validation"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Login",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const response = pm.response.json();",
+                      "",
+                      "pm.test(\"Login returns tokens\", function () {",
+                      "    pm.expect(response.accessToken).to.exist;",
+                      "    pm.expect(response.refreshToken).to.exist;",
+                      "});",
+                      "",
+                      "if (response.accessToken) {",
+                      "    pm.environment.set(\"accessToken\", response.accessToken);",
+                      "}",
+                      "",
+                      "if (response.refreshToken) {",
+                      "    pm.environment.set(\"refreshToken\", response.refreshToken);",
+                      "}"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"test@mail.com\",\n  \"password\": \"12345678\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{userUrl}}/login",
+                  "host": [
+                    "{{userUrl}}"
+                  ],
+                  "path": [
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Refresh Session",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const response = pm.response.json();",
+                      "",
+                      "pm.test(\"Refresh returns new tokens\", function () {",
+                      "    pm.expect(response.accessToken).to.exist;",
+                      "    pm.expect(response.refreshToken).to.exist;",
+                      "});",
+                      "",
+                      "if (response.accessToken) {",
+                      "    pm.environment.set(\"accessToken\", response.accessToken);",
+                      "}",
+                      "",
+                      "if (response.refreshToken) {",
+                      "    pm.environment.set(\"refreshToken\", response.refreshToken);",
+                      "}"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{userUrl}}/refresh",
+                  "host": [
+                    "{{userUrl}}"
+                  ],
+                  "path": [
+                    "refresh"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Logout",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.environment.unset(\"accessToken\");",
+                      "pm.environment.unset(\"refreshToken\");"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{userUrl}}/logout",
+                  "host": [
+                    "{{userUrl}}"
+                  ],
+                  "path": [
+                    "logout"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "User Profile",
+          "item": [
+            {
+              "name": "Complete User Data",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Victor Manuel\",\n  \"lastName\": \"Peiro Martinez\",\n  \"nif\": \"12344678A\",\n  \"address\": {\n    \"street\": \"Travesia de Antonio Nebrija\",\n    \"number\": 4,\n    \"postal\": \"28040\",\n    \"city\": \"Madrid\",\n    \"province\": \"Madrid\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{userUrl}}/register",
+                  "host": [
+                    "{{userUrl}}"
+                  ],
+                  "path": [
+                    "register"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Authenticated User",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{userUrl}}",
+                  "host": [
+                    "{{userUrl}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Change Password",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"currentPassword\": \"12345678\",\n  \"newPassword\": \"87654321\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{userUrl}}/password",
+                  "host": [
+                    "{{userUrl}}"
+                  ],
+                  "path": [
+                    "password"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete User (Soft)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{userUrl}}?soft=true",
+                  "host": [
+                    "{{userUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "soft",
+                      "value": "true"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete User (Hard)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{userUrl}}?soft=false",
+                  "host": [
+                    "{{userUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "soft",
+                      "value": "false"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Company",
+          "item": [
+            {
+              "name": "Register Company",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"isFreelance\": false,\n  \"name\": \"FAKECOMPANY\",\n  \"cif\": \"B-12345778\",\n  \"address\": {\n    \"street\": \"Gran Via\",\n    \"number\": 15,\n    \"postal\": \"28013\",\n    \"city\": \"Madrid\",\n    \"province\": \"Madrid\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{userUrl}}/company",
+                  "host": [
+                    "{{userUrl}}"
+                  ],
+                  "path": [
+                    "company"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Upload Company Logo",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "logo",
+                      "type": "file",
+                      "uuid": "d595da25-09be-48fa-b854-1ee493eee97d",
+                      "src": "postman-cloud:///1f12d300-7aff-4c10-892e-8cf65e63ba9a"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{userUrl}}/logo",
+                  "host": [
+                    "{{userUrl}}"
+                  ],
+                  "path": [
+                    "logo"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Invite",
+          "item": [
+            {
+              "name": "Invite User",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"guest@test.com\",\n  \"password\": \"12345678\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{userUrl}}/invite",
+                  "host": [
+                    "{{userUrl}}"
+                  ],
+                  "path": [
+                    "invite"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Negative Cases",
+          "item": [
+            {
+              "name": "Get Authenticated User - No Token",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{userUrl}}",
+                  "host": [
+                    "{{userUrl}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Validate Email - Wrong Code",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"code\": \"000000\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{userUrl}}/validation",
+                  "host": [
+                    "{{userUrl}}"
+                  ],
+                  "path": [
+                    "validation"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Register User - Duplicate Email",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"juan@gmail.com\",\n  \"password\": \"12345678\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{userUrl}}/register",
+                  "host": [
+                    "{{userUrl}}"
+                  ],
+                  "path": [
+                    "register"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Client",
+      "item": [
+        {
+          "name": "GetClientsFilter",
+          "item": [
+            {
+              "name": "Filter page y limit",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{clientUrl}}?page=2&limit=1",
+                  "host": [
+                    "{{clientUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "2"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Filter name",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{clientUrl}}?name=tes",
+                  "host": [
+                    "{{clientUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "name",
+                      "value": "tes"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Filter name sort",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{clientUrl}}?sort=name",
+                  "host": [
+                    "{{clientUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "sort",
+                      "value": "name"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "CRUD",
+          "item": [
+            {
+              "name": "createClient",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"name\": \"testClient\",\r\n    \"cif\":\"A-29958609\",\r\n    \"email\":\"testClient@mail.com\",\r\n    \"address\": {\r\n        \"street\":\"y\",\r\n        \"number\": 1,\r\n        \"postal\": \"00000\",\r\n        \"city\": \"x\",\r\n        \"province\": \"x\"\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{clientUrl}}",
+                  "host": [
+                    "{{clientUrl}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "updateClient",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "",
+                    "value": "",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"name\": \"updatedClient\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{clientUrl}}/{{idClient}}",
+                  "host": [
+                    "{{clientUrl}}"
+                  ],
+                  "path": [
+                    "{{idClient}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "GetUserClients",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{clientUrl}}",
+                  "host": [
+                    "{{clientUrl}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Client",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "",
+                    "value": "",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{clientUrl}}/{{idClient}}",
+                  "host": [
+                    "{{clientUrl}}"
+                  ],
+                  "path": [
+                    "{{idClient}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Soft Delete",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{clientUrl}}/{{idClient}}?soft=true",
+                  "host": [
+                    "{{clientUrl}}"
+                  ],
+                  "path": [
+                    "{{idClient}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "soft",
+                      "value": "true"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Hard Delete",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "",
+                    "value": "",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{clientUrl}}/{{idClient}}",
+                  "host": [
+                    "{{clientUrl}}"
+                  ],
+                  "path": [
+                    "{{idClient}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Archived",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{clientUrl}}/archived",
+                  "host": [
+                    "{{clientUrl}}"
+                  ],
+                  "path": [
+                    "archived"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Restore Client",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{clientUrl}}/{{idClient}}/restore",
+                  "host": [
+                    "{{clientUrl}}"
+                  ],
+                  "path": [
+                    "{{idClient}}",
+                    "restore"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Negative Cases",
+          "item": [
+            {
+              "name": "Client Duplicado",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"name\": \"testClient\",\r\n    \"cif\":\"B-23456789\",\r\n    \"email\":\"testClient@mail.com\",\r\n    \"address\": {\r\n        \"street\":\"y\",\r\n        \"number\": 1,\r\n        \"postal\": \"00000\",\r\n        \"city\": \"x\",\r\n        \"province\": \"x\"\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{clientUrl}}",
+                  "host": [
+                    "{{clientUrl}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Cliente No Existente",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "",
+                    "value": "",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"name\": \"updatedClient\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{clientUrl}}/{{idClient}}",
+                  "host": [
+                    "{{clientUrl}}"
+                  ],
+                  "path": [
+                    "{{idClient}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Flitrado Invalido",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{clientUrl}}?pepito=123",
+                  "host": [
+                    "{{clientUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "pepito",
+                      "value": "123"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Project",
+      "item": [
+        {
+          "name": "GetProjectsFilters",
+          "item": [
+            {
+              "name": "Filter page y limit",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{projectUrl}}?page=2&limit=1",
+                  "host": [
+                    "{{projectUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "2"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Filter name",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{projectUrl}}?name=1",
+                  "host": [
+                    "{{projectUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "name",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Filter client",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{projectUrl}}?client={{idClient}}",
+                  "host": [
+                    "{{projectUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "client",
+                      "value": "{{idClient}}"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Filter active",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{projectUrl}}?active=false",
+                  "host": [
+                    "{{projectUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "active",
+                      "value": "false"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Filter createdAt sort",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{projectUrl}}?sort=createdAt",
+                  "host": [
+                    "{{projectUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "sort",
+                      "value": "createdAt"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "CRUD",
+          "item": [
+            {
+              "name": "createProject",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"client\": \"{{idClient}}\",\r\n    \"name\": \"proyecto1\",\r\n    \"projectCode\": \"PR-1\",\r\n    \"email\":\"pr1@mail.com\",\r\n    \"address\": {\r\n        \"street\":\"Avenida Ancha de Castelar\",\r\n        \"number\": 53,\r\n        \"postal\": \"03690\",\r\n        \"city\": \"Sant Vicent del Raspeig\",\r\n        \"province\": \"Alicante\"\r\n    },\r\n    \"active\": true\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{projectUrl}}",
+                  "host": [
+                    "{{projectUrl}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "updateProject",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "",
+                    "value": "",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"name\": \"PROYECTO1\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{projectUrl}}/{{idProject}}",
+                  "host": [
+                    "{{projectUrl}}"
+                  ],
+                  "path": [
+                    "{{idProject}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "GetCompanyProjects",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{projectUrl}}",
+                  "host": [
+                    "{{projectUrl}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Project",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "",
+                    "value": "",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{projectUrl}}/{{idProject}}",
+                  "host": [
+                    "{{projectUrl}}"
+                  ],
+                  "path": [
+                    "{{idProject}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Soft Delete",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{projectUrl}}/{{idProject}}?soft=true",
+                  "host": [
+                    "{{projectUrl}}"
+                  ],
+                  "path": [
+                    "{{idProject}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "soft",
+                      "value": "true"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Hard Delete",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "",
+                    "value": "",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{projectUrl}}/{{idProject}}",
+                  "host": [
+                    "{{projectUrl}}"
+                  ],
+                  "path": [
+                    "{{idProject}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Archived",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{projectUrl}}/archived",
+                  "host": [
+                    "{{projectUrl}}"
+                  ],
+                  "path": [
+                    "archived"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Restore Project",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{projectUrl}}/{{idProject}}/restore",
+                  "host": [
+                    "{{projectUrl}}"
+                  ],
+                  "path": [
+                    "{{idProject}}",
+                    "restore"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Negative Cases",
+          "item": [
+            {
+              "name": "Projecto Duplicado",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"client\": \"{{idClient}}\",\r\n    \"name\": \"proyecto1\",\r\n    \"projectCode\": \"PR-1\",\r\n    \"email\":\"pr1@mail.com\",\r\n    \"address\": {\r\n        \"street\":\"Avenida Ancha de Castelar\",\r\n        \"number\": 53,\r\n        \"postal\": \"03690\",\r\n        \"city\": \"Sant Vicent del Raspeig\",\r\n        \"province\": \"Alicante\"\r\n    },\r\n    \"active\": true\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{projectUrl}}",
+                  "host": [
+                    "{{projectUrl}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Cliente No Existente",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "",
+                    "value": "",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"name\": \"PROYECTO1\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{projectUrl}}/asijdnciwnhuid",
+                  "host": [
+                    "{{projectUrl}}"
+                  ],
+                  "path": [
+                    "asijdnciwnhuid"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Flitrado Invalido",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{projectUrl}}?pepito=123",
+                  "host": [
+                    "{{projectUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "pepito",
+                      "value": "123"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "DeliveryNote",
+      "item": [
+        {
+          "name": "CRUD",
+          "item": [
+            {
+              "name": "Create Delivery Note - Material",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"project\":\"{{idProject}}\",\r\n    \"format\": \"material\",\r\n    \"description\": \"Albaran de Materiales 2\",\r\n    \"workDate\": \"2025-04-26\",\r\n    \"material\": \"Cobre\",\r\n    \"quantity\": 10,\r\n    \"unit\": \"kg\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{deliveryNoteUrl}}",
+                  "host": [
+                    "{{deliveryNoteUrl}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create Delivery Note - Hours",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"project\":\"{{idProject}}\",\r\n    \"format\": \"hours\",\r\n    \"description\": \"Albaran de Horas 2\",\r\n    \"workDate\": \"2026-04-26\",\r\n    \"hours\": 20,\r\n    \"workers\": [\r\n        {\r\n            \"name\": \"Manolo\",\r\n            \"hours\": 10\r\n        },\r\n        {\r\n            \"name\": \"Pepe\",\r\n            \"hours\": 10\r\n        }\r\n    ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{deliveryNoteUrl}}",
+                  "host": [
+                    "{{deliveryNoteUrl}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Obtain DeliveryNote",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{deliveryNoteUrl}}/{{idAlbaran}}",
+                  "host": [
+                    "{{deliveryNoteUrl}}"
+                  ],
+                  "path": [
+                    "{{idAlbaran}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "List Delivery Notes",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{deliveryNoteUrl}}",
+                  "host": [
+                    "{{deliveryNoteUrl}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Hard Delete",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "",
+                    "value": "",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{deliveryNoteUrl}}/{{idAlbaran}}",
+                  "host": [
+                    "{{deliveryNoteUrl}}"
+                  ],
+                  "path": [
+                    "{{idAlbaran}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Soft Delete",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{deliveryNoteUrl}}/{{idAlbaran}}?soft=true",
+                  "host": [
+                    "{{deliveryNoteUrl}}"
+                  ],
+                  "path": [
+                    "{{idAlbaran}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "soft",
+                      "value": "true"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "PDFs",
+          "item": [
+            {
+              "name": "PDF Sin Firma",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{deliveryNoteUrl}}/pdf/{{idAlbaran}}",
+                  "host": [
+                    "{{deliveryNoteUrl}}"
+                  ],
+                  "path": [
+                    "pdf",
+                    "{{idAlbaran}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Firmar PDF",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "signature",
+                      "type": "file",
+                      "uuid": "3c3cd3fc-85f8-4c37-ae92-aeccef285674",
+                      "src": "postman-cloud:///1f141b92-69f5-4f10-8273-273db4bf35c3"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{deliveryNoteUrl}}/{{idAlbaran}}/sign",
+                  "host": [
+                    "{{deliveryNoteUrl}}"
+                  ],
+                  "path": [
+                    "{{idAlbaran}}",
+                    "sign"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Filtros",
+          "item": [
+            {
+              "name": "Page y Limit Filter",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{deliveryNoteUrl}}?page=2&limit=2",
+                  "host": [
+                    "{{deliveryNoteUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "2"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "2"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Sort Filter",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{deliveryNoteUrl}}?sort=-workDate",
+                  "host": [
+                    "{{deliveryNoteUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "sort",
+                      "value": "-workDate"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Format Filter",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{deliveryNoteUrl}}?format=material",
+                  "host": [
+                    "{{deliveryNoteUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "format",
+                      "value": "material"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Signed Filter",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{deliveryNoteUrl}}?signed=true",
+                  "host": [
+                    "{{deliveryNoteUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "signed",
+                      "value": "true"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "From y To Filter",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{deliveryNoteUrl}}?from=2025-01-01&to=2025-12-31",
+                  "host": [
+                    "{{deliveryNoteUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "from",
+                      "value": "2025-01-01"
+                    },
+                    {
+                      "key": "to",
+                      "value": "2025-12-31"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Project Filter",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{deliveryNoteUrl}}?project={{idProject}}",
+                  "host": [
+                    "{{deliveryNoteUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "project",
+                      "value": "{{idProject}}"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Client Filter",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{deliveryNoteUrl}}?client={{idClient}}",
+                  "host": [
+                    "{{deliveryNoteUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "client",
+                      "value": "{{idClient}}"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "UsuariosComprobaciones",
+      "item": [
+        {
+          "name": "Logins",
+          "item": [
+            {
+              "name": "Login Con Compañia",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "const response = pm.response.json();",
+                      "",
+                      "pm.test(\"Login returns tokens\", function () {",
+                      "    pm.expect(response.accessToken).to.exist;",
+                      "    pm.expect(response.refreshToken).to.exist;",
+                      "});",
+                      "",
+                      "if (response.accessToken) {",
+                      "    pm.environment.set(\"accessToken\", response.accessToken);",
+                      "}",
+                      "",
+                      "if (response.refreshToken) {",
+                      "    pm.environment.set(\"refreshToken\", response.refreshToken);",
+                      "}"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"test@mail.com\",\n  \"password\": \"12345678\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{userUrl}}/login",
+                  "host": [
+                    "{{userUrl}}"
+                  ],
+                  "path": [
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Login Con Compañia 2",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "const response = pm.response.json();",
+                      "",
+                      "pm.test(\"Login returns tokens\", function () {",
+                      "    pm.expect(response.accessToken).to.exist;",
+                      "    pm.expect(response.refreshToken).to.exist;",
+                      "});",
+                      "",
+                      "if (response.accessToken) {",
+                      "    pm.environment.set(\"accessToken\", response.accessToken);",
+                      "}",
+                      "",
+                      "if (response.refreshToken) {",
+                      "    pm.environment.set(\"refreshToken\", response.refreshToken);",
+                      "}"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"test1@mail.com\",\n  \"password\": \"12345678\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{userUrl}}/login",
+                  "host": [
+                    "{{userUrl}}"
+                  ],
+                  "path": [
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Login Sin Compañia",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "const response = pm.response.json();",
+                      "",
+                      "pm.test(\"Login returns tokens\", function () {",
+                      "    pm.expect(response.accessToken).to.exist;",
+                      "    pm.expect(response.refreshToken).to.exist;",
+                      "});",
+                      "",
+                      "if (response.accessToken) {",
+                      "    pm.environment.set(\"accessToken\", response.accessToken);",
+                      "}",
+                      "",
+                      "if (response.refreshToken) {",
+                      "    pm.environment.set(\"refreshToken\", response.refreshToken);",
+                      "}"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"testnocompany@mail.com\",\n  \"password\": \"12345678\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{userUrl}}/login",
+                  "host": [
+                    "{{userUrl}}"
+                  ],
+                  "path": [
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Login Invitado",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "const response = pm.response.json();\r",
+                      "\r",
+                      "pm.test(\"Login returns tokens\", function () {\r",
+                      "    pm.expect(response.accessToken).to.exist;\r",
+                      "    pm.expect(response.refreshToken).to.exist;\r",
+                      "});\r",
+                      "\r",
+                      "if (response.accessToken) {\r",
+                      "    pm.environment.set(\"accessToken\", response.accessToken);\r",
+                      "}\r",
+                      "\r",
+                      "if (response.refreshToken) {\r",
+                      "    pm.environment.set(\"refreshToken\", response.refreshToken);\r",
+                      "}"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"guest@test.com\",\n    \"password\": \"12345678\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{userUrl}}/login",
+                  "host": [
+                    "{{userUrl}}"
+                  ],
+                  "path": [
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Usuario Con Compañia + Invitado",
+          "item": [
+            {
+              "name": "Registro Usuario",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 201\", function () {",
+                      "    pm.response.to.have.status(201);",
+                      "});",
+                      "",
+                      "const response = pm.response.json();",
+                      "",
+                      "if (response.accessToken) {",
+                      "    pm.environment.set(\"accessToken\", response.accessToken);",
+                      "}",
+                      "",
+                      "if (response.refreshToken) {",
+                      "    pm.environment.set(\"refreshToken\", response.refreshToken);",
+                      "}"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"test@mail.com\",\n    \"password\": \"12345678\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{userUrl}}/register",
+                  "host": [
+                    "{{userUrl}}"
+                  ],
+                  "path": [
+                    "register"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Onboarding Datos Usuario",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "const response = pm.response.json();"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Victor Manuel\",\n  \"lastName\": \"Peiro Martinez\",\n  \"nif\": \"12345678A\",\n  \"address\": {\n    \"street\": \"Travesia de Antonio Nebrija\",\n    \"number\": 4,\n    \"postal\": \"28040\",\n    \"city\": \"Madrid\",\n    \"province\": \"Madrid\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{userUrl}}/register",
+                  "host": [
+                    "{{userUrl}}"
+                  ],
+                  "path": [
+                    "register"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Onboarding Compañia 1",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "const response = pm.response.json();",
+                      "",
+                      "pm.test(\"Company registered\", function () {",
+                      "    pm.expect(response.company).to.exist;",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"isFreelance\": false,\n  \"name\": \"Bildy SL\",\n  \"cif\": \"B-12345678\",\n  \"address\": {\n    \"street\": \"Gran Via\",\n    \"number\": 15,\n    \"postal\": \"28013\",\n    \"city\": \"Madrid\",\n    \"province\": \"Madrid\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{userUrl}}/company",
+                  "host": [
+                    "{{userUrl}}"
+                  ],
+                  "path": [
+                    "company"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Invitado",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 201\", function () {",
+                      "    pm.response.to.have.status(201);",
+                      "});",
+                      "",
+                      "const response = pm.response.json();",
+                      "",
+                      "pm.test(\"Invited user created\", function () {",
+                      "    pm.expect(response.user).to.exist;",
+                      "    pm.expect(response.user.role).to.eql(\"guest\");",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"guest@test.com\",\n  \"password\": \"12345678\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{userUrl}}/invite",
+                  "host": [
+                    "{{userUrl}}"
+                  ],
+                  "path": [
+                    "invite"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Usuario Con Compañia 2",
+          "item": [
+            {
+              "name": "Registro Usuario 2",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 201\", function () {",
+                      "    pm.response.to.have.status(201);",
+                      "});",
+                      "",
+                      "const response = pm.response.json();",
+                      "",
+                      "if (response.accessToken) {",
+                      "    pm.environment.set(\"accessToken\", response.accessToken);",
+                      "}",
+                      "",
+                      "if (response.refreshToken) {",
+                      "    pm.environment.set(\"refreshToken\", response.refreshToken);",
+                      "}"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"test1@mail.com\",\n    \"password\": \"12345678\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{userUrl}}/register",
+                  "host": [
+                    "{{userUrl}}"
+                  ],
+                  "path": [
+                    "register"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Onboarding Datos Usuario",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "const response = pm.response.json();"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Victor Manuel\",\n  \"lastName\": \"Peiro Martinez\",\n  \"nif\": \"12344678A\",\n  \"address\": {\n    \"street\": \"Travesia de Antonio Nebrija\",\n    \"number\": 4,\n    \"postal\": \"28040\",\n    \"city\": \"Madrid\",\n    \"province\": \"Madrid\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{userUrl}}/register",
+                  "host": [
+                    "{{userUrl}}"
+                  ],
+                  "path": [
+                    "register"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Onboarding Compañia 2",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "const response = pm.response.json();",
+                      "",
+                      "pm.test(\"Company registered\", function () {",
+                      "    pm.expect(response.company).to.exist;",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"isFreelance\": false,\n  \"name\": \"FAKECOMPANY\",\n  \"cif\": \"B-12345778\",\n  \"address\": {\n    \"street\": \"Gran Via\",\n    \"number\": 15,\n    \"postal\": \"28013\",\n    \"city\": \"Madrid\",\n    \"province\": \"Madrid\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{userUrl}}/company",
+                  "host": [
+                    "{{userUrl}}"
+                  ],
+                  "path": [
+                    "company"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Usuario Sin Compañia",
+          "item": [
+            {
+              "name": "Registro Usuario Sin Compañia",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 201\", function () {",
+                      "    pm.response.to.have.status(201);",
+                      "});",
+                      "",
+                      "const response = pm.response.json();",
+                      "",
+                      "if (response.accessToken) {",
+                      "    pm.environment.set(\"accessToken\", response.accessToken);",
+                      "}",
+                      "",
+                      "if (response.refreshToken) {",
+                      "    pm.environment.set(\"refreshToken\", response.refreshToken);",
+                      "}"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"testnocompany@mail.com\",\n    \"password\": \"12345678\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{userUrl}}/register",
+                  "host": [
+                    "{{userUrl}}"
+                  ],
+                  "path": [
+                    "register"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
